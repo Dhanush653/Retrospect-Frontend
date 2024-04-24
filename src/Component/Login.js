@@ -8,7 +8,6 @@ import Link from '@mui/material/Link';
 const Login = () => {
   return (
     <>
-    <h1></h1>
     <Header />
     <Box
       sx={{
