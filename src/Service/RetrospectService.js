@@ -16,6 +16,11 @@ class RetrospectService {
   register(userData) {
     return axios.post("http://localhost:8080/signup", userData)
   }
+
+  getAllRooms(){
+    return axios.get("http://localhost:8080/rooms")
+  }
 }
 
-export default new RetrospectService();
+const retro = new RetrospectService();
+export default retro;
