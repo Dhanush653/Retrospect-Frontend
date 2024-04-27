@@ -17,15 +17,14 @@ const Dashboard = () => {
             }
         };
         fetchRooms();
-        return () => {
-        };
     }, []);
+
     return (
         <div>
             <Header />
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                {rooms.map(room => (
-                    <Box key={room.id} sx={{ position: 'relative', width: '230px', height: '320px', margin: '10px',marginTop:'30px', padding: '20px', border: '2px solid black', borderRadius: '10px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 0.3s', ':hover': { transform: 'scale(1.02)' } }}>
+                {rooms.map((room, index) => (
+                    <Box key={room.id || index} sx={{ position: 'relative', width: '230px', height: '320px', margin: '10px',marginTop:'30px', padding: '20px', border: '2px solid black', borderRadius: '10px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 0.3s', ':hover': { transform: 'scale(1.02)' } }}>
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '50px', backgroundColor: 'black', borderTopLeftRadius: '8px', borderTopRightRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <Typography variant="h6" gutterBottom style={{ color: 'white' }}>
                                 {room.roomType}
