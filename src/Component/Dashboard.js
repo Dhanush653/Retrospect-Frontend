@@ -3,11 +3,11 @@ import Header from './Header';
 import { Box, Typography, Button } from '@mui/material';
 import RetrospectService from '../Service/RetrospectService';
 import img1 from '../Asserts/img4.jpeg';
-import { useParams } from 'react-router-dom'; // Import useParams
+import { useParams } from 'react-router-dom';
 
 const Dashboard = () => {
     const [rooms, setRooms] = useState([]);
-    const { userId, userRole } = useParams(); // Get userId and userRole from URL params
+    const { userId, userRole } = useParams(); 
 
     useEffect(() => {
         const fetchRooms = async () => {
@@ -27,11 +27,11 @@ const Dashboard = () => {
 
     return (
         <div>
-            <Header role={userRole} /> {/* Pass userRole as a prop to Header */}
+            <Header role={userRole} />
             <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', marginTop: '20px' }}>
                 {rooms.map((room, index) => (
                     <Box key={room.id || index} sx={{ position: 'relative', width: '25%', height: '160px', margin: '10px', marginTop: '30px', padding: '20px', border: '2px solid black', borderRadius: '10px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 0.3s', ':hover': { transform: 'scale(1.02)' }}}>
-                        <img src={img1} alt="Room" style={{ position: 'absolute', top: 0, left: 0, width: '40%', height: '100%', objectFit: 'cover', borderTopLeftRadius: '2px', borderBottomLeftRadius:'2.5px' }} />
+                        <img src={room.room_image} alt="Room" style={{ position: 'absolute', top: 0, left: 0, width: '40%', height: '100%', objectFit: 'cover', borderTopLeftRadius: '2px', borderBottomLeftRadius:'2.5px' }} />
                         <Typography variant="h7" gutterBottom style={{ position: 'absolute', top: '5%', left: '60%', transform: 'translateX(-30%)', color: 'black',  borderRadius: '5px', fontWeight:'bold' }}>
                             {room.roomType}
                         </Typography>
@@ -40,7 +40,7 @@ const Dashboard = () => {
                         </Typography>
                         <div style={{ position: 'absolute', top: '5px', right: '5px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: room.roomStatus === 'active' ? '#4ef037' : '#ff0000' }}></div>
                         {room.roomStatus === 'active' ? (
-                            <Button variant="contained" onClick={() => openRoom('https://www.google.com')} style={{ marginTop: '130px',marginLeft:'38%', backgroundColor: 'black', color: 'white' }}>Enter Room</Button>
+                            <Button variant="contained" onClick={() => openRoom('https://www.whatsapp.com')} style={{ marginTop: '130px',marginLeft:'38%', backgroundColor: 'black', color: 'white' }}>Enter Room</Button>
                         ) : (
                             <Button disabled style={{marginTop: '130px',marginLeft:'38%',fontWeight:'bolder', color:'#5f6769' }}>Room closed</Button>
                         )}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Box, Typography, Select, MenuItem, InputLabel } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, FormLabel, RadioGroup, Radio, Box, Select, MenuItem, InputLabel } from '@mui/material';
+import retro from '../Service/RetrospectService'; 
 import img1 from '../Asserts/img1.jpeg';
 import img2 from '../Asserts/img2.jpeg';
 import img3 from '../Asserts/img3.jpeg';
@@ -7,11 +8,10 @@ import img4 from '../Asserts/img4.jpeg';
 
 const Createroom = ({ open, onClose }) => {
   const [roomDetails, setRoomDetails] = useState({
-    name: '',
-    description: '',
+    roomDescription: '',
     roomName: '',
     roomType: '',
-    image: ''
+    room_image: ''
   });
 
   const handleChange = (e) => {
@@ -19,29 +19,31 @@ const Createroom = ({ open, onClose }) => {
     setRoomDetails({ ...roomDetails, [name]: value });
   };
 
-  const handleSubmit = () => {
-    // Process the room details here (e.g., send to backend)
-    console.log('Room details:', roomDetails);
-    onClose(); // Close the dialog
-    // Reset form data
+  const handleSubmit = async () => {
+    try {
+      const response = await retro.createRoom(roomDetails); 
+      console.log('Room created successfully:', response.data);
+    } catch (error) {
+      console.error('Error creating room:', error);
+    }
+    onClose();
     setRoomDetails({
-      name: '',
-      description: '',
+      roomDescription: '',
       roomName: '',
       roomType: '',
-      image: ''
+      room_image: ''
     });
   };
 
   const handleImageChange = (image) => {
-    setRoomDetails({ ...roomDetails, image });
+    setRoomDetails({ ...roomDetails, room_image: image });
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Create Room</DialogTitle>
       <DialogContent>
-      <TextField
+        <TextField
           name="roomName"
           label="Room-Name"
           value={roomDetails.roomName}
@@ -51,9 +53,9 @@ const Createroom = ({ open, onClose }) => {
           sx={{ marginBottom: '10px' }}
         />
         <TextField
-          name="description"
+          name="roomDescription"
           label="Room-Description"
-          value={roomDetails.description}
+          value={roomDetails.roomDescription}
           onChange={handleChange}
           variant="outlined"
           fullWidth
@@ -76,29 +78,29 @@ const Createroom = ({ open, onClose }) => {
           </Select>
         </FormControl>
         <FormControl component="fieldset">
-          <FormLabel component="legend">Room Theme</FormLabel>
+          <FormLabel component="legend">Room Image</FormLabel>
           <RadioGroup
             row
             aria-label="select image"
-            name="image"
-            value={roomDetails.image}
+            name="room_image"
+            value={roomDetails.room_image}
             onChange={(e) => handleImageChange(e.target.value)}
           >
             <Box display="flex" alignItems="center">
-              <FormControlLabel value='../Asserts/img1.jpeg' control={<Radio />} />
-              <img src={img1} alt="Image 1" style={{ width: 37, height: 37, marginLeft:'-20%',marginRight:'2%', borderRadius:'50%' }} />
+              <Radio value={img1} />
+              <img src={img1} alt="Image 1" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
             </Box>
             <Box display="flex" alignItems="center">
-              <FormControlLabel value='../Asserts/img2.jpeg' control={<Radio />} />
-              <img src={img2} alt="Image 2" style={{ width: 37, height: 37, marginLeft:'-20%',marginRight:'2%', borderRadius:'50%'  }} />
+              <Radio value={img2} />
+              <img src={img2} alt="Image 2" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
             </Box>
             <Box display="flex" alignItems="center">
-              <FormControlLabel value='../Asserts/img3.jpeg' control={<Radio />} />
-              <img src={img3} alt="Image 3" style={{ width: 37, height: 37, marginLeft:'-20%',marginRight:'2%', borderRadius:'50%'  }} />
+              <Radio value={img3} />
+              <img src={img3} alt="Image 3" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
             </Box>
             <Box display="flex" alignItems="center">
-              <FormControlLabel value='../Asserts/img4.jpeg' control={<Radio />} />
-              <img src={img4} alt="Image 4" style={{ width: 37, height: 37, marginLeft:'-20%',marginRight:'2%', borderRadius:'50%'  }} />
+              <Radio value={img4} />
+              <img src={img4} alt="Image 4" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
             </Box>
           </RadioGroup>
         </FormControl>
