@@ -8,10 +8,16 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import { Link, useLocation } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import Createroom from './Createroom'; // Import the Createroom component
 
 export default function ButtonAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
+  const location = useLocation();
+  const role = location.pathname.split('/')[3];
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -26,6 +32,14 @@ export default function ButtonAppBar() {
     localStorage.removeItem('userEmail');
     setUserEmail(null);
     window.location.href = '/';
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   return (
@@ -75,6 +89,12 @@ export default function ButtonAppBar() {
               >
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
+              {role === 'admin' && (
+                <>
+                  <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor:'green', marginLeft:'-1%' }} onClick={handleOpenDialog}>+ Create Room</Button>
+                  <Createroom open={openDialog} onClose={handleCloseDialog} />
+                </>
+              )}
             </>
           ) : null}
         </Toolbar>
