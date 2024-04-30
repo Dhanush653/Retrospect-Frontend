@@ -10,8 +10,9 @@ const Createroom = ({ open, onClose }) => {
   const [roomDetails, setRoomDetails] = useState({
     roomDescription: '',
     roomName: '',
-    roomType: '',
-    room_image: ''
+    room_image: '',
+    room_startdate: '',
+    room_enddate: ''
   });
 
   const handleChange = (e) => {
@@ -30,8 +31,9 @@ const Createroom = ({ open, onClose }) => {
     setRoomDetails({
       roomDescription: '',
       roomName: '',
-      roomType: '',
-      room_image: ''
+      room_image: '',
+      room_startdate: '',
+      room_enddate: ''
     });
   };
 
@@ -61,22 +63,30 @@ const Createroom = ({ open, onClose }) => {
           fullWidth
           sx={{ marginBottom: '10px' }}
         />
-        <FormControl fullWidth sx={{ marginBottom: '10px' }}>
-          <InputLabel id="roomTypeLabel">Room Type</InputLabel>
-          <Select
-            labelId="roomTypeLabel"
-            id="roomType"
-            name="roomType"
-            value={roomDetails.roomType}
+        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+          <TextField
+            label="Start Date"
+            type="date"
+            name="room_startdate"
+            value={roomDetails.room_startdate}
             onChange={handleChange}
-            label="Room Type"
-          >
-            <MenuItem value="What Went Well">What Went Well</MenuItem>
-            <MenuItem value="What Went Wrong">What Went Wrong</MenuItem>
-            <MenuItem value="positives">Positives</MenuItem>
-            <MenuItem value="blenders">Blenders</MenuItem>
-          </Select>
-        </FormControl>
+            InputLabelProps={{
+              shrink: true,
+            }}
+            sx={{ width: '45%' }}
+          />
+          <TextField
+            label="End Date"
+            type="date"
+            name="room_enddate"
+            value={roomDetails.room_enddate}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            sx={{ width: '45%' }}
+          />
+        </div>
         <FormControl component="fieldset">
           <FormLabel component="legend">Room Image</FormLabel>
           <RadioGroup

@@ -37,7 +37,7 @@ const Login = () => {
   
         const userDetailsResponse = await RetrospectService.getUserByToken(response.data);
         const userEmail = userDetailsResponse.data.userEmail;
-        localStorage.setItem('userEmail', userEmail); // Store userEmail in local storage
+        localStorage.setItem('userEmail', userEmail); 
   
         setUserEmail(userEmail);
   
@@ -52,13 +52,9 @@ const Login = () => {
       setError("Invalid credentials");
     }
   };
-  // useEffect(() => {
-  //   console.log('User email:', userEmail); // Print userEmail for debugging
-  // }, [userEmail]);
-
   return (
     <>
-      <Header userEmail={userEmail} /> {/* Pass userEmail to Header */}
+      <Header userEmail={userEmail} />
       <Box
         sx={{
           minHeight: '100vh',
