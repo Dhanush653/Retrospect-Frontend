@@ -24,17 +24,11 @@ const Createroom = ({ open, onClose }) => {
     try {
       const response = await retro.createRoom(roomDetails); 
       console.log('Room created successfully:', response.data);
+      onClose();
+      window.location.reload(); // Reload the page after creating the room
     } catch (error) {
       console.error('Error creating room:', error);
     }
-    onClose();
-    setRoomDetails({
-      roomDescription: '',
-      roomName: '',
-      room_image: '',
-      room_startdate: '',
-      room_enddate: ''
-    });
   };
 
   const handleImageChange = (image) => {
@@ -128,3 +122,5 @@ const Createroom = ({ open, onClose }) => {
 };
 
 export default Createroom;
+
+
