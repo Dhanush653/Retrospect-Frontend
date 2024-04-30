@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, FormLabel, RadioGroup, Radio, Box, Select, MenuItem, InputLabel } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, RadioGroup, Radio, Box } from '@mui/material';
 import retro from '../Service/RetrospectService'; 
 import img1 from '../Asserts/img1.jpeg';
 import img2 from '../Asserts/img2.jpeg';
@@ -63,7 +63,8 @@ const Createroom = ({ open, onClose }) => {
           fullWidth
           sx={{ marginBottom: '10px' }}
         />
-        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+
+          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
           <TextField
             label="Start Date"
             type="date"
@@ -73,7 +74,7 @@ const Createroom = ({ open, onClose }) => {
             InputLabelProps={{
               shrink: true,
             }}
-            sx={{ width: '45%' }}
+            sx={{ width: '45%', marginBottom:'3%' }}
           />
           <TextField
             label="End Date"
@@ -88,7 +89,6 @@ const Createroom = ({ open, onClose }) => {
           />
         </div>
         <FormControl component="fieldset">
-          <FormLabel component="legend">Room Image</FormLabel>
           <RadioGroup
             row
             aria-label="select image"
@@ -98,19 +98,19 @@ const Createroom = ({ open, onClose }) => {
           >
             <Box display="flex" alignItems="center">
               <Radio value={img1} />
-              <img src={img1} alt="Image 1" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
+              <img src={img1} alt="Img 1" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
             </Box>
             <Box display="flex" alignItems="center">
               <Radio value={img2} />
-              <img src={img2} alt="Image 2" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
+              <img src={img2} alt="Img 2" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
             </Box>
             <Box display="flex" alignItems="center">
               <Radio value={img3} />
-              <img src={img3} alt="Image 3" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
+              <img src={img3} alt="Img 3" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
             </Box>
             <Box display="flex" alignItems="center">
               <Radio value={img4} />
-              <img src={img4} alt="Image 4" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
+              <img src={img4} alt="Img 4" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
             </Box>
           </RadioGroup>
         </FormControl>
