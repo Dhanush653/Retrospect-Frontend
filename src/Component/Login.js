@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import Header from './Header';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
@@ -14,7 +14,7 @@ const Login = () => {
   });
 
   const [error, setError] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
+  const [userEmail, setUserEmail] = useState(null); 
   const navigate = useNavigate();
 
   const handleChange = (event) => {
@@ -31,19 +31,19 @@ const Login = () => {
         userEmail: formData.email,
         userPassword: formData.password
       });
-
+  
       if (response && response.data) {
         localStorage.setItem('token', response.data);
-
+  
         const userDetailsResponse = await RetrospectService.getUserByToken(response.data);
         const userEmail = userDetailsResponse.data.userEmail;
-        localStorage.setItem('userEmail', userEmail);
-
+        localStorage.setItem('userEmail', userEmail); 
+  
         setUserEmail(userEmail);
-
+  
         const userId = userDetailsResponse.data.userId;
         const userRole = userDetailsResponse.data.userRole;
-
+  
         navigate(`/dashboard/${userId}/${userRole}`);
       } else {
         setError("Invalid credentials");
@@ -52,8 +52,6 @@ const Login = () => {
       setError("Invalid credentials");
     }
   };
-  document.body.style.overflow = 'hidden';
-
   return (
     <>
       <Header userEmail={userEmail} />
@@ -64,12 +62,11 @@ const Login = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start',
-          overflowY: 'hidden' 
         }}
       >
         <Box
           backgroundColor="#f2f2f2"
-          height={320}
+          height={300}
           width={400}
           marginTop='5%'
           marginBottom='2%'
@@ -110,3 +107,4 @@ const Login = () => {
 }
 
 export default Login;
+
