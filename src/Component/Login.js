@@ -66,7 +66,7 @@ const Login = () => {
       >
         <Box
           backgroundColor="#f2f2f2"
-          height={300}
+          height={310}
           width={400}
           marginTop='5%'
           marginBottom='2%'

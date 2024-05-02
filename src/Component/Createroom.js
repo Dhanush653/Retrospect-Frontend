@@ -41,7 +41,6 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
       } else {
         await retro.createRoom(roomDetails);
       }
-      console.log('Room created/updated successfully:', roomDetails);
       onClose();
       window.location.reload(); 
     } catch (error) {
