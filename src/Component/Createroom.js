@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, RadioGroup, Radio, Box } from '@mui/material';
 import retro from '../Service/RetrospectService'; 
 import img1 from '../Asserts/img1.jpeg';
@@ -6,7 +6,7 @@ import img2 from '../Asserts/img2.jpeg';
 import img3 from '../Asserts/img3.jpeg';
 import img4 from '../Asserts/img4.jpeg';
 
-const Createroom = ({ open, onClose }) => {
+const Createroom = ({ open, onClose, onCreateSuccess, roomToUpdate }) => {
   const [roomDetails, setRoomDetails] = useState({
     roomDescription: '',
     roomName: '',
@@ -15,6 +15,12 @@ const Createroom = ({ open, onClose }) => {
     room_enddate: ''
   });
 
+  useEffect(() => {
+    if (roomToUpdate) {
+      setRoomDetails(roomToUpdate);
+    }
+  }, [roomToUpdate]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRoomDetails({ ...roomDetails, [name]: value });
@@ -22,12 +28,16 @@ const Createroom = ({ open, onClose }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await retro.createRoom(roomDetails); 
-      console.log('Room created successfully:', response.data);
+      if (roomToUpdate) {
+        await retro.updateRoom(roomToUpdate.roomId, roomDetails);
+      } else {
+        await retro.createRoom(roomDetails);
+      }
+      console.log('Room created/updated successfully:', roomDetails);
       onClose();
-      window.location.reload(); // Reload the page after creating the room
+      onCreateSuccess();
     } catch (error) {
-      console.error('Error creating room:', error);
+      console.error('Error creating/updating room:', error);
     }
   };
 
@@ -37,7 +47,7 @@ const Createroom = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Create Room</DialogTitle>
+      <DialogTitle>{roomToUpdate ? 'Update Room' : 'Create Room'}</DialogTitle>
       <DialogContent>
         <TextField
           name="roomName"
@@ -58,7 +68,7 @@ const Createroom = ({ open, onClose }) => {
           sx={{ marginBottom: '10px' }}
         />
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
           <TextField
             label="Start Date"
             type="date"
@@ -111,7 +121,7 @@ const Createroom = ({ open, onClose }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleSubmit} variant="contained" color="primary">
-          Create
+          {roomToUpdate ? 'Update' : 'Create'}
         </Button>
         <Button onClick={onClose} variant="outlined" color="primary">
           Cancel
@@ -122,5 +132,3 @@ const Createroom = ({ open, onClose }) => {
 };
 
 export default Createroom;
-
-
