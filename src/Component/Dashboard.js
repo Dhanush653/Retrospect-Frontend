@@ -27,8 +27,17 @@ const Dashboard = () => {
         window.open(url, '_blank');
     }
 
-    const handleCreateRoomSuccess = () => {
-        setReloadDashboard(prevState => !prevState); 
+    const handleCreateRoomSuccess = async () => {
+        setRoomToUpdate(null);
+        try {
+            if (reloadDashboard) {
+                setReloadDashboard(prevState => !prevState); 
+            } else {
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('Error handling room creation success:', error);
+        }
     };
 
     const handleUpdateRoom = (room) => {
@@ -42,7 +51,7 @@ const Dashboard = () => {
 
     return (
         <div>
-            <Header role={userRole} onCreateRoom={handleCreateRoomSuccess} />
+            <Header role={userRole} onCreateRoom={() => setRoomToUpdate({})} />
             <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', marginTop: '20px' }}>
                 {rooms.map((room, index) => (
                     <Box key={room.id || index} sx={{ position: 'relative', width: '25%', height: '160px', margin: '10px', marginTop: '30px', padding: '20px', border: '3px solid black', borderRadius: '2px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 0.3s', ':hover': { transform: 'scale(1.02)' }, backgroundColor:"#f2f2f2"}}>
@@ -67,10 +76,9 @@ const Dashboard = () => {
                     </Box>
                 ))}
             </div>
-            <Createroom open={roomToUpdate !== null} onClose={() => setRoomToUpdate(null)} onCreateSuccess={handleCreateRoomSuccess} roomToUpdate={roomToUpdate} />
+            <Createroom open={!!roomToUpdate} onClose={() => setRoomToUpdate(null)} onCreateSuccess={handleCreateRoomSuccess} roomToUpdate={roomToUpdate} />
         </div>
     );
 }
 
 export default Dashboard;
-

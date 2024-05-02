@@ -6,7 +6,7 @@ import img2 from '../Asserts/img2.jpeg';
 import img3 from '../Asserts/img3.jpeg';
 import img4 from '../Asserts/img4.jpeg';
 
-const Createroom = ({ open, onClose, onCreateSuccess, roomToUpdate }) => {
+const Createroom = ({ open, onClose, roomToUpdate }) => {
   const [roomDetails, setRoomDetails] = useState({
     roomDescription: '',
     roomName: '',
@@ -17,7 +17,15 @@ const Createroom = ({ open, onClose, onCreateSuccess, roomToUpdate }) => {
 
   useEffect(() => {
     if (roomToUpdate) {
-      setRoomDetails(roomToUpdate);
+      setRoomDetails(roomToUpdate); 
+    } else {
+      setRoomDetails({
+        roomDescription: '',
+        roomName: '',
+        room_image: '',
+        room_startdate: '',
+        room_enddate: ''
+      });
     }
   }, [roomToUpdate]);
 
@@ -35,7 +43,7 @@ const Createroom = ({ open, onClose, onCreateSuccess, roomToUpdate }) => {
       }
       console.log('Room created/updated successfully:', roomDetails);
       onClose();
-      onCreateSuccess();
+      window.location.reload(); 
     } catch (error) {
       console.error('Error creating/updating room:', error);
     }
@@ -132,3 +140,4 @@ const Createroom = ({ open, onClose, onCreateSuccess, roomToUpdate }) => {
 };
 
 export default Createroom;
+
