@@ -1,5 +1,6 @@
 import React, { useState} from 'react';
-import Header from './Header';
+import Header from './Header'
+import loginHeader from './LoginHeader';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import { TextField, Button } from '@mui/material';
@@ -43,6 +44,8 @@ const Login = () => {
   
         const userId = userDetailsResponse.data.userId;
         const userRole = userDetailsResponse.data.userRole;
+
+        console.log(userDetailsResponse.data)
   
         navigate(`/dashboard/${userId}/${userRole}`);
       } else {
@@ -107,4 +110,3 @@ const Login = () => {
 }
 
 export default Login;
-

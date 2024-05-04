@@ -10,9 +10,9 @@ function App() {
     <BrowserRouter>
       <div>
         <Routes>
-          <Route path='/' element={<Login />} />
+          <Route exact path='/' element={<Login />} />
           <Route path='/registration' element={<Registration />} />
-          <Route path='/dashboard/:userId/:userRole' element={<Dashboard />} />
+          <Route  path='/dashboard/:userId/:userRole' element={<Dashboard />} />
           <Route path='/createroom' element={<Createroom/>}/>
         </Routes>
       </div>
@@ -22,4 +22,3 @@ function App() {
 
 export default App;
 
-//           <Route path='/dashboard/:userId/:userRole/createroom' element={<Createroom />} /> {/* Update route for Createroom */}

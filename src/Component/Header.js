@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatIcon from '../Asserts/chaticon.png';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -11,12 +11,36 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import { useLocation } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Createroom from './Createroom';
+import RetrospectService from '../Service/RetrospectService';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+
 export default function ButtonAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
   const location = useLocation();
   const role = location.pathname.split('/')[3];
   const [openDialog, setOpenDialog] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
+  const [showUserDetails, setShowUserDetails] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      getUserDetails(token);
+    }
+  }, []);
+
+  const getUserDetails = async (token) => {
+    try {
+      const response = await RetrospectService.getUserByToken(token);
+      setUserDetails(response.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -30,6 +54,7 @@ export default function ButtonAppBar() {
     localStorage.removeItem('token');
     localStorage.removeItem('userEmail');
     setUserEmail(null);
+    setUserDetails(null);
     window.location.href = '/';
   };
 
@@ -39,6 +64,12 @@ export default function ButtonAppBar() {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+  };
+
+  const handleMyAccount = () => {
+    getUserDetails(localStorage.getItem('token'));
+    setShowUserDetails(true);
+    handleClose();
   };
 
   return (
@@ -59,6 +90,9 @@ export default function ButtonAppBar() {
           </Typography>
           {userEmail ? (
             <>
+              {/* <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
+                {userEmail}
+              </Typography> */}
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -68,9 +102,6 @@ export default function ButtonAppBar() {
               >
                 <AccountCircleOutlinedIcon />
               </IconButton>
-              <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
-                {userEmail}
-              </Typography>
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -86,11 +117,15 @@ export default function ButtonAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
+                <MenuItem onClick={handleMyAccount}>My Account</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
+              <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
+                {userEmail}
+              </Typography>
               {role === 'admin' && (
                 <>
-                  <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor:'green', marginLeft:'-1%' }} onClick={handleOpenDialog}>+ Create Room</Button>
+                  <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor: 'green', marginLeft: '-1%' }} onClick={handleOpenDialog}>+ Create Room</Button>
                   <Createroom open={openDialog} onClose={handleCloseDialog} />
                 </>
               )}
@@ -98,7 +133,18 @@ export default function ButtonAppBar() {
           ) : null}
         </Toolbar>
       </AppBar>
+      <Dialog open={showUserDetails} onClose={() => setShowUserDetails(false)}>
+        <DialogTitle>User Details</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">User ID: {userDetails && userDetails.userId}</Typography>
+          <Typography variant="body1">User Name: {userDetails && userDetails.userName}</Typography>
+          <Typography variant="body1">User Email: {userDetails && userDetails.userEmail}</Typography>
+          <Typography variant="body1">User Role: {userDetails && userDetails.userRole}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowUserDetails(false)} color="primary">Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
-
