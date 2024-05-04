@@ -28,6 +28,10 @@ class RetrospectService {
   updateRoom(roomId, updatedRoomDetails) {
     return axios.put(`http://localhost:8080/updateRoom/${roomId}`, updatedRoomDetails);
   }
+
+  updateUser(userId, updatedUserDetails) {
+    return axios.put(`http://localhost:8080/update/${userId}`, updatedUserDetails);
+  }
 }
 
 const retro = new RetrospectService();

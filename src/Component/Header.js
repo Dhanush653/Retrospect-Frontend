@@ -8,8 +8,9 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import { useLocation } from 'react-router-dom';
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { useLocation } from 'react-router-dom';
 import Createroom from './Createroom';
 import RetrospectService from '../Service/RetrospectService';
 import Dialog from '@mui/material/Dialog';
@@ -25,6 +26,7 @@ export default function ButtonAppBar() {
   const [openDialog, setOpenDialog] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
+  const [updatedUserDetails, setUpdatedUserDetails] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -37,6 +39,7 @@ export default function ButtonAppBar() {
     try {
       const response = await RetrospectService.getUserByToken(token);
       setUserDetails(response.data);
+      setUpdatedUserDetails({ ...response.data }); // Initialize updated user details with fetched data
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -72,6 +75,28 @@ export default function ButtonAppBar() {
     handleClose();
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setUpdatedUserDetails({ ...updatedUserDetails, [name]: value });
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const response = await RetrospectService.updateUser(userDetails.userId, updatedUserDetails);
+      console.log("Update response:", response);
+      if (response.status === 200) {
+        alert("User details updated successfully");
+      } else {
+        alert("Failed to update user details");
+      }
+      setShowUserDetails(false);
+    } catch (error) {
+      console.error("Error updating user details:", error);
+      alert("Failed to update user details");
+    }
+  };
+  
+
   return (
     <Box sx={{ flexGrow: 0.5 }}>
       <AppBar position="static" sx={{ backgroundColor: 'black' }}>
@@ -90,9 +115,6 @@ export default function ButtonAppBar() {
           </Typography>
           {userEmail ? (
             <>
-              {/* <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
-                {userEmail}
-              </Typography> */}
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -133,16 +155,53 @@ export default function ButtonAppBar() {
           ) : null}
         </Toolbar>
       </AppBar>
-      <Dialog open={showUserDetails} onClose={() => setShowUserDetails(false)}>
+      <Dialog open={showUserDetails} onClose={() => setShowUserDetails(false)} fullWidth maxWidth="md">
         <DialogTitle>User Details</DialogTitle>
         <DialogContent>
-          <Typography variant="body1">User ID: {userDetails && userDetails.userId}</Typography>
-          <Typography variant="body1">User Name: {userDetails && userDetails.userName}</Typography>
-          <Typography variant="body1">User Email: {userDetails && userDetails.userEmail}</Typography>
-          <Typography variant="body1">User Role: {userDetails && userDetails.userRole}</Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', width: '150px' }}>User ID:</Typography>
+              <TextField
+                value={userDetails && userDetails.userId}
+                fullWidth
+                disabled
+              />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', width: '150px' }}>User Name:</Typography>
+              <TextField
+                name="userName"
+                value={updatedUserDetails && updatedUserDetails.userName}
+                onChange={handleInputChange}
+                fullWidth
+              />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', width: '150px' }}>User Email:</Typography>
+              <TextField
+                name="userEmail"
+                value={updatedUserDetails && updatedUserDetails.userEmail}
+                onChange={handleInputChange}
+                fullWidth
+              />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography variant="body1" sx={{ fontWeight: 'bold', width: '150px' }}>User Role:</Typography>
+              <TextField
+                value={userDetails && userDetails.userRole}
+                fullWidth
+                disabled
+              />
+            </Box>
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowUserDetails(false)} color="primary">Close</Button>
+          <Button onClick={() => setShowUserDetails(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleUpdate} color="primary">
+            Update
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
