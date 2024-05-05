@@ -12,6 +12,7 @@ export default function ResetPasswordDialog({ open, onClose }) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  
   const [passwordMismatch, setPasswordMismatch] = useState(false);
 
   useEffect(() => {
