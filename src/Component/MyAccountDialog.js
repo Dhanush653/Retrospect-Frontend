@@ -24,7 +24,7 @@ export default function MyAccountDialog({ open, onClose }) {
     try {
       const response = await RetrospectService.getUserByToken(token);
       setUserDetails(response.data);
-      setUpdatedUserDetails({ ...response.data }); // Initialize updated user details with fetched data
+      setUpdatedUserDetails({ ...response.data });
     } catch (error) {
       console.error("Error fetching user data:", error);
     }

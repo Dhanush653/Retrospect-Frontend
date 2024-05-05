@@ -8,18 +8,17 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import { useLocation } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Createroom from './Createroom';
+import ResetPasswordDialog from './ResetPasswordDialog';
 import MyAccountDialog from './MyAccountDialog';
 
 export default function ButtonAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
-  const location = useLocation();
-  const role = location.pathname.split('/')[3];
   const [openMyAccountDialog, setOpenMyAccountDialog] = useState(false);
   const [openCreateRoomDialog, setOpenCreateRoomDialog] = useState(false);
+  const [openResetPasswordDialog, setOpenResetPasswordDialog] = useState(false); 
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -38,6 +37,7 @@ export default function ButtonAppBar() {
 
   const handleOpenMyAccountDialog = () => {
     setOpenMyAccountDialog(true);
+    handleMenuClose(); 
   };
 
   const handleCloseMyAccountDialog = () => {
@@ -46,10 +46,20 @@ export default function ButtonAppBar() {
 
   const handleOpenCreateRoomDialog = () => {
     setOpenCreateRoomDialog(true);
+    handleMenuClose(); 
   };
 
   const handleCloseCreateRoomDialog = () => {
     setOpenCreateRoomDialog(false);
+  };
+
+  const handleOpenResetPasswordDialog = () => {
+    setOpenResetPasswordDialog(true);
+    handleMenuClose(); 
+  };
+
+  const handleCloseResetPasswordDialog = () => {
+    setOpenResetPasswordDialog(false);
   };
 
   return (
@@ -95,22 +105,20 @@ export default function ButtonAppBar() {
                 onClose={handleMenuClose}
               >
                 <MenuItem onClick={handleOpenMyAccountDialog}>My Account</MenuItem>
+                <MenuItem onClick={handleOpenResetPasswordDialog}>Reset Password</MenuItem> 
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
               <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
                 {userEmail}
               </Typography>
-              {role === 'admin' && (
-                <>
-                  <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor: 'green', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button>
-                  <Createroom open={openCreateRoomDialog} onClose={handleCloseCreateRoomDialog} />
-                </>
-              )}
+              <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor: 'green', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button> 
+              <Createroom open={openCreateRoomDialog} onClose={handleCloseCreateRoomDialog} /> 
             </>
           ) : null}
         </Toolbar>
       </AppBar>
       <MyAccountDialog open={openMyAccountDialog} onClose={handleCloseMyAccountDialog} />
+      <ResetPasswordDialog open={openResetPasswordDialog} onClose={handleCloseResetPasswordDialog} /> 
     </Box>
   );
 }

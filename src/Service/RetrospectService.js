@@ -32,6 +32,10 @@ class RetrospectService {
   updateUser(userId, updatedUserDetails) {
     return axios.put(`http://localhost:8080/update/${userId}`, updatedUserDetails);
   }
+
+  resetPassword(resetPasswordData) {
+    return axios.post("http://localhost:8080/resetpassword", resetPasswordData);
+  }
 }
 
 const retro = new RetrospectService();
