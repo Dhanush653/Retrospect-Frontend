@@ -68,7 +68,7 @@ const Login = () => {
       >
         <Box
           backgroundColor="#f2f2f2"
-          height={310}
+          height={330}
           width={400}
           marginTop='5%'
           marginBottom='2%'
@@ -87,6 +87,11 @@ const Login = () => {
           </Box>
           <Box display='flex' alignItems='center' marginTop={2} marginBottom={4}>
             <TextField name='password' type='password' value={formData.password} onChange={handleChange} variant='outlined' size='small' placeholder='Enter your Password...' sx={{ '& input': { padding: '5px 35px' }, backgroundColor: 'white' }} />
+          </Box>
+          <Box display="flex" justifyContent="center" marginTop={-2} marginLeft={2} marginBottom={2}  color={'grey'}>
+          <Link component={RouterLink} to="/forgot" color="primary" underline="always">
+            Forgot Password?
+          </Link>  
           </Box>
           <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ justifyContent: 'center', borderRadius: '20px' }}>
             Login

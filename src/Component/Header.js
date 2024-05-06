@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatIcon from '../Asserts/chaticon.png';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -12,13 +12,24 @@ import Button from '@mui/material/Button';
 import Createroom from './Createroom';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import MyAccountDialog from './MyAccountDialog';
+import { useLocation } from 'react-router-dom';
 
 export default function ButtonAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
+  const [isAdmin, setIsAdmin] = useState(false);
   const [openMyAccountDialog, setOpenMyAccountDialog] = useState(false);
   const [openCreateRoomDialog, setOpenCreateRoomDialog] = useState(false);
   const [openResetPasswordDialog, setOpenResetPasswordDialog] = useState(false); 
+  const location = useLocation();
+  const isAdminPage = location.pathname.includes('/admin');
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData && userData.isAdmin) {
+      setIsAdmin(true);
+    }
+  }, []);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -111,7 +122,9 @@ export default function ButtonAppBar() {
               <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
                 {userEmail}
               </Typography>
-              <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor: 'green', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button> 
+              {(isAdmin || isAdminPage) && ( // Render button if isAdmin or isAdminPage
+                <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor: 'green', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button>
+              )}
               <Createroom open={openCreateRoomDialog} onClose={handleCloseCreateRoomDialog} /> 
             </>
           ) : null}
@@ -122,3 +135,4 @@ export default function ButtonAppBar() {
     </Box>
   );
 }
+

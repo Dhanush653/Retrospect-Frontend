@@ -48,7 +48,7 @@ const Dashboard = () => {
     return (
         <div>
             <Header role={userRole} onCreateRoom={() => setRoomToUpdate({})} />
-            <div style={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap', marginTop: '20px', marginLeft:'7%' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap', marginTop: '20px', marginLeft:'7%',marginBottom:'3%' }}>
                 {rooms.map((room, index) => (
                     <Box key={room.id || index} sx={{ position: 'relative', width: '25%', height: '160px', marginLeft: '20px', marginTop: '30px', padding: '20px', border: '3px solid black', borderRadius: '2px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'transform 0.3s', ':hover': { transform: 'scale(1.02)' }, backgroundColor: "#f2f2f2" }}>
                         <img src={room.room_image} alt="Room" style={{ position: 'absolute', top: 0, left: 0, width: '38%', height: '100%', objectFit: 'cover' }} />

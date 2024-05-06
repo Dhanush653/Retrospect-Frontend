@@ -36,6 +36,15 @@ class RetrospectService {
   resetPassword(resetPasswordData) {
     return axios.post("http://localhost:8080/resetpassword", resetPasswordData);
   }
+
+  forgetPassword(emailData) {
+    return axios.post("http://localhost:8080/forgot", emailData);
+}
+
+
+changePassword(change) {
+    return axios.post("http://localhost:8080/change", change);
+}
 }
 
 const retro = new RetrospectService();
