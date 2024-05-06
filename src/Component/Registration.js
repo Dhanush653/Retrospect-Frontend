@@ -77,13 +77,18 @@ const Registration = () => {
           alignItems="center"
           p={2}
           borderRadius={1}
-          sx={{ border: '1px solid white' }}
+          sx={{ 
+            fontFamily: 'Arial, sans-serif',
+            borderRadius:'0%',
+            color: '#E066FF',
+            background:'linear-gradient(109.6deg, rgb(20, 30, 48) 11.2%, rgb(36, 59, 85) 91.1%)'
+           }}
         >
-          <Typography variant="h6" fontWeight="bold" color="#393e46" gutterBottom>
-            Sign Up
+          <Typography variant="h6" fontWeight="bold" color="white" gutterBottom>
+            SIGN UP
           </Typography>
           <form onSubmit={handleSubmit}>
-            <Typography variant="subtitle1">Name</Typography>
+            <Typography variant="subtitle1" color='white'>Name</Typography>
             <TextField
               name="name"
               value={formValue.name}
@@ -93,7 +98,7 @@ const Registration = () => {
               placeholder="Enter your name..."
               sx={{ marginBottom: '20px', '& input': { padding: '5px 35px' }, backgroundColor: 'white' }}
             />
-            <Typography variant="subtitle1">Email</Typography>
+            <Typography variant="subtitle1" color='white'>Email</Typography>
             <TextField
               name="email"
               value={formValue.email}
@@ -103,7 +108,7 @@ const Registration = () => {
               placeholder="Enter your email..."
               sx={{ marginBottom: '20px', '& input': { padding: '5px 35px' }, backgroundColor: 'white' }}
             />
-            <Typography variant="subtitle1">Password</Typography>
+            <Typography variant="subtitle1" color='white'>Password</Typography>
             <TextField
               type="password"
               name="password"
@@ -114,7 +119,7 @@ const Registration = () => {
               placeholder="Enter your password..."
               sx={{ marginBottom: '20px', '& input': { padding: '5px 35px' }, backgroundColor: 'white' }}
             />
-            <Typography variant="subtitle1">Confirm Password</Typography>
+            <Typography variant="subtitle1" color='white'>Confirm Password</Typography>
             <TextField
               type="password"
               name="confirmPassword"
@@ -130,7 +135,7 @@ const Registration = () => {
                 Passwords do not match
               </Typography>
             )}
-            <Typography variant="subtitle1">Role</Typography>
+            <Typography variant="subtitle1" color='white'>Role</Typography>
             <RadioGroup value={formValue.role} onChange={handleRoleChange} sx={{ marginBottom: '20px' }}>
               <FormControlLabel value="admin" control={<Radio />} label="Admin" />
               <FormControlLabel value="user" control={<Radio />} label="User" />
@@ -140,8 +145,8 @@ const Registration = () => {
             </Button>
           </form>
           <Box display="flex" justifyContent="left" marginBottom={4} marginTop={2} color={'grey'}>
-            <span style={{ fontStyle: 'italic' }}> Already Have a Account : </span>
-            <MuiLink component={RouterLink} to="/" color="primary" underline="none">
+            <span style={{ fontStyle: 'italic', color:'white' }}> Already Have a Account : </span>
+            <MuiLink component={RouterLink} to="/" color="red" underline="none">
               Click Here
             </MuiLink>
           </Box>
