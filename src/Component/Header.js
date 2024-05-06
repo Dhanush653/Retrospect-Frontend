@@ -122,7 +122,7 @@ export default function ButtonAppBar() {
               <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
                 {userEmail}
               </Typography>
-              {(isAdmin || isAdminPage) && ( // Render button if isAdmin or isAdminPage
+              {(isAdmin || isAdminPage) && ( 
                 <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor: 'green', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button>
               )}
               <Createroom open={openCreateRoomDialog} onClose={handleCloseCreateRoomDialog} /> 

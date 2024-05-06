@@ -38,6 +38,7 @@ const Registration = () => {
         console.log('response from backend', response.data);
         if (response.data === 'You have been signed up successfully') {
           window.alert('Registered Successfully');
+          window.location.href = '/'; // Redirect to "/" after successful registration
         }
       })
       .catch((error) => {
@@ -151,6 +152,3 @@ const Registration = () => {
 };
 
 export default Registration;
-
-
-
