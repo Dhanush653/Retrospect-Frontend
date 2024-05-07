@@ -23,8 +23,8 @@ const Dashboard = () => {
         fetchRooms();
     }, [userId, reloadDashboard]);
 
-    const openRoom = (url) => {
-        window.open(url, '_blank');
+    const openRoom = (roomId) => {
+        window.open(`/chatroom/${roomId}`, '_blank');
     }
 
     const handleCreateRoomSuccess = async () => {
@@ -64,7 +64,7 @@ const Dashboard = () => {
                                 <Button variant="outlined" onClick={() => handleUpdateRoom(room)} style={{ marginRight: '10px', fontWeight: 'bold', color: 'black', width: '30px', fontSize: '10px', borderColor: 'black' }}>Update</Button>
                             )}
                             {room.roomStatus === 'active' ? (
-                                <Button variant="contained" onClick={() => openRoom('/chatroom')} style={{ backgroundColor: 'black', color: 'white', fontSize: '10px' }}>Enter Room</Button>
+                                <Button variant="contained" onClick={() => openRoom(room.roomId)} style={{ backgroundColor: 'black', color: 'white', fontSize: '10px' }}>Enter Room</Button>
                             ) : (
                                 <Button disabled style={{ fontWeight: 'bolder', color: '#5f6769', fontSize: '10px' }}>Room closed</Button>
                             )}

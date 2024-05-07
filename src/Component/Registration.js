@@ -137,10 +137,19 @@ const Registration = () => {
             )}
             <Typography variant="subtitle1" color='white'>Role</Typography>
             <RadioGroup value={formValue.role} onChange={handleRoleChange} sx={{ marginBottom: '20px' }}>
-              <FormControlLabel value="admin" control={<Radio />} label="Admin" />
-              <FormControlLabel value="user" control={<Radio />} label="User" />
+              <FormControlLabel
+              value="admin"
+              control={<Radio />}
+              label={<Typography style={{ color: 'white' }}>Admin</Typography>}
+              />
+              <FormControlLabel
+              value="user"
+              control={<Radio />}
+              label={<Typography style={{ color: 'white' }}>User</Typography>}
+              />
+
             </RadioGroup>
-            <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: '20px' }}>
+            <Button type="submit" variant="contained" sx={{ borderRadius: '20px', background:'#f95959' }}>
               Sign Up
             </Button>
           </form>

@@ -5,6 +5,7 @@ import Dashboard from './Component/Dashboard';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Createroom from './Component/Createroom';
 import ForgotPassword from './Component/ForgotPassword';
+import ChatRoom from './Component/ChatRoom';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route  path='/dashboard/:userId/:userRole' element={<Dashboard />} />
           <Route path='/createroom' element={<Createroom/>}/>
           <Route path='/forgot' element={<ForgotPassword/>}/>
+          <Route path='/chatroom/:roomId' element = {<ChatRoom roomName="General Chat"/>}/>
         </Routes>
       </div>
     </BrowserRouter>
