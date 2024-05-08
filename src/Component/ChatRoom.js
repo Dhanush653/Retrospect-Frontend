@@ -1,288 +1,223 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
-import { useParams } from 'react-router-dom';
-import Header from './Header'
+import React, { Component } from "react";
+import "./ChatRoom.css";
+import Card from "./Card";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
-function ChatRoom() {
-  const [socket, setSocket] = useState(null);
-  const [connectionStatus, setConnectionStatus] = useState(false);
-  const [message, setMessage] = useState('');
-  const [messageData, setMessageData] = useState([]); 
-  const { roomId } = useParams();
-  const username = localStorage.getItem('userName');
-  const [goodMessages ,setGoodMessages] = useState([]);
-  const [goodMessageText, setGoodMessageText] = useState('');
-  const [receivedMessage, setReceivedMessage] = useState(null);
-  const [commonMessageText, setCommonMessageText] = useState('');
-  const [badMessages, setBadMessages] = useState([]);
-  const [badMessageText, setBadMessageText] = useState('');
-  const [posMessages, setPosMessages]  = useState([]);
-  const [posMessageText, setPosMessageText] = useState('');
-  const [blunderMessages, setBlunderMessages] = useState([]);
-  const [blunderMessageText, setBlunderMessageText] = useState('');
-  const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    const username = localStorage.getItem('userName');
-    const socketUrl = `http://192.168.0.231:8085?room=${roomId}&username=${username}`;
-    
-    const newSocket = io(socketUrl, {
-      transports: ['websocket'],
-      upgrade: false
-    });
-
-    newSocket.on('connect', () => {
-      console.log('Socket connected');
-      setConnectionStatus(true);
-    });
-
-    newSocket.on('disconnect', () => {
-      console.log('Socket disconnected');
-      setConnectionStatus(false);
-    });
-
-    newSocket.on('receive_message', (data) => {
-      console.log('Received message from server:', data);
-      setReceivedMessage(data);
-      setMessageData(prevMessages => [...prevMessages, data]);
-      
-    });
-
-    setSocket(newSocket);
-
-    return () => {
-      newSocket.disconnect();
-    };
-  }, [roomId]);
-
-  const handleChange = (e) => {
-    setMessage(e.target.value);
+class App extends Component {
+  state = {
+    categories: {
+      wentWell: [],
+      toImprove: [],
+      actionItems: []
+    },
+    userInput: "",
+    id: 0,
+    Cards: [],
+    likes: 0,
+    dislikes: 0
   };
 
-  const handleSubmit = (e, contentType) => {
-    e.preventDefault();
-    console.log('Sending message to server:', message);
-    const data ={
-      "room": roomId,
-      "username": username,
-      "content": message,
-      "contentType": 'message'
-  }
-    socket.emit('message', data);
-    setMessage('');
+  userInput = (e, idx) => {
+    let newCards = [...this.state.Cards];
+    newCards[idx].input = e.target.value;
+    this.setState({
+      Cards: newCards
+    });
   };
 
-  useEffect(() => {
-    if (receivedMessage) {
-      switch (receivedMessage.contentType) {
-        case 'Good':
-          setGoodMessages(prevMessages => [...prevMessages, receivedMessage]);
-          break;
-        case 'Bad':
-          setBadMessages(prevMessages => [...prevMessages, receivedMessage]);
-          break;
-        case 'Pos':
-          setPosMessages(prevMessages => [...prevMessages, receivedMessage]);
-          break;
-        case 'Blunder':
-          setBlunderMessages(prevMessages => [...prevMessages, receivedMessage]);
-          break;
-        default:
-          break;
+  validateInput = e => {
+    if (e.target.value === "") {
+      window.alert("input required");
+    }
+  };
+  
+  Delete = id => {
+    this.setState({
+      Cards: this.state.Cards.filter(card => card.id !== id)
+    });
+  };
+
+  CreateCard = (type, input) => {
+    this.setState({
+      Cards: [
+        ...this.state.Cards,
+        {
+          id: this.state.id,
+          type: type,
+          input: input,
+          likes: 0,
+          dislikes: 0
+        }
+      ],
+      id: this.state.id + 1
+    });
+  };
+
+  MoveLeft = (id, idx) => {
+    let newCards = [...this.state.Cards];
+    for (let card of newCards) {
+      if (card.id === id && card.type === "Went Well") {
+        card.type = "Action Items";
+      } else if (card.id === id && card.type === "To Improve") {
+        card.type = "Went Well";
+      } else if (card.id === id && card.type === "Action Items") {
+        card.type = "To Improve";
       }
     }
-  }, [receivedMessage]);
+    newCards.push(newCards[idx]);
+    newCards.splice(idx, 1);
+    this.setState({
+      Cards: newCards
+    });
+  };
 
-
-  const handleSendMessage = (message, contentType) => {
-    const data = {
-      content: message,
-      room: roomId,
-      username,
-      contentType
-    };
-    sendMessage(data);
-    switch (contentType) {
-      case 'Common':
-        setCommonMessageText('');
-        break;
-      case 'Good':
-        setGoodMessageText('');
-        break;
-      case 'Bad':
-        setBadMessageText('');
-        break;
-      case 'Pos':
-        setPosMessageText('');
-        break;
-      case 'Blunder':
-        setBlunderMessageText('');
-        break;
-      default:
-        break;
+  MoveRight = (id, idx) => {
+    let newCards = [...this.state.Cards];
+    for (let card of newCards) {
+      if (card.id === id && card.type === "Went Well") {
+        card.type = "To Improve";
+      } else if (card.id === id && card.type === "To Improve") {
+        card.type = "Action Items";
+      } else if (card.id === id && card.type === "Action Items") {
+        card.type = "Went Well";
+      }
     }
+    newCards.push(newCards[idx]);
+    newCards.splice(idx, 1);
+    this.setState({
+      Cards: newCards
+    });
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  handleLikes = idx => {
+    let newCards = [...this.state.Cards];
+    newCards[idx].likes++;
+    this.setState({
+      Cards: newCards
+    });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messageData, goodMessages, badMessages, posMessages, blunderMessages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  handleDislikes = idx => {
+    let newCards = [...this.state.Cards];
+    newCards[idx].dislikes++;
+    this.setState({
+      Cards: newCards
+    });
   };
-
-  const sendMessage = (data) => {
-    console.log('Sending message to server:', data);
-    socket.emit('message', data);
-    inputRef.current.focus();
-  };
-
-
-  // different new
-
-  const [tab, setTab] = useState("CHATROOM");
-
-
-  return (
   
-    <div className="container">
-      <Header/>
-        <div className="chat-box">
-            <div className="member-list">
-                <ul>
-                    <li onClick={()=>{setTab("CHATROOM")}} className={`member ${tab==="CHATROOM" && "active"}`}>Chatroom</li>
-                </ul>
-                <ul>
-                    <li onClick={()=>{setTab("Good")}} className={`member ${tab==="Good" && "active"}`}>What Went Good</li>
-                </ul>
-                <ul>
-                    <li onClick={()=>{setTab("Bad")}} className={`member ${tab==="Bad" && "active"}`}>What Went Wrong</li>
-                </ul>
-                <ul>
-                    <li onClick={()=>{setTab("Pos")}} className={`member ${tab==="Pos" && "active"}`}>Positives</li>
-                </ul>
-                <ul>
-                    <li onClick={()=>{setTab("Blunder")}} className={`member ${tab==="Blunder" && "active"}`}>Blunders</li>
-                </ul>
+  render() {
+    return (
+      <div className="App">
+        <h2>Retro Board</h2> <br />
+        <div className="text-center">
+          <div className="row">
+            <div>
+              <h4>Went Well</h4>
+              <button
+                type="button"
+                className="addButton"
+                onClick={() => this.CreateCard("Went Well", "")}
+              >
+                +
+              </button>
+              {this.state.Cards.map((card, idx) => {
+                if (card.type === "Went Well") {
+                  return (
+                    <Card
+                      key={"Went Well" + idx}
+                      idx={idx}
+                      cardId={card.id}
+                      value={card.input}
+                      userInput={this.userInput}
+                      validateInput={this.validateInput}
+                      MoveLeft={this.MoveLeft}
+                      Delete={this.Delete}
+                      MoveRight={this.MoveRight}
+                      likesCount={card.likes}
+                      dislikesCount={card.dislikes}
+                      handleLikes={this.handleLikes}
+                      handleDislikes={this.handleDislikes}
+                      color={"wentWell"}
+                    />
+                  );
+                } else {
+                  return null;
+                }
+              })}
             </div>
-
-
-            {tab==="CHATROOM" && <div className="chat-content">
-                <ul className="chat-messages">
-                    {messageData.map((msg, index)=>(
-                        <li className={`message ${username === username} && self`} key={index}>
-                            {/* {chat.senderName !== userData.username && <div className="avatar">Incoming</div>} */}
-                            <div className="message-data">
-                                <p key={index}>{msg.content}</p>
-                            </div>
-                            {<div className="avatar self">{username}</div>}
-                        </li>
-                    ))}
-                </ul>
-
-                <div className="send-message">
-                    <input type="text" className="input-message" placeholder="enter the message" value={message} onChange={handleChange} /> 
-                    <button type="button" className="send-button" onClick={handleSubmit}>send</button>
-                </div>
-            </div>}
-
-            {tab==="Good" && <div className="chat-content">
-                <ul className="chat-messages">
-                    {goodMessages.map((msg, index)=>(
-                        <li className={`message ${username === username && "self"}`} key={index}>
-                            {/* {chat.senderName !== userData.username && <div className="avatar">Incoming</div>} */}
-                            <div className="message-data">
-                                <p key={index}>{msg.content}</p>
-                            </div>
-                            {<div className="avatar self">{msg.username}</div>}
-                        </li>
-                    ))}
-                    <div ref={messagesEndRef} />
-                </ul>
-
-                <div className="send-message">
-                    <input type="text" className="input-message" placeholder="enter the message" value={goodMessageText} onChange={(e) => setGoodMessageText(e.target.value)} onKeyDown={handleKeyDown} ref={inputRef}/> 
-                    <button type="button" className="send-button" onClick={() => handleSendMessage(goodMessageText, 'Good')}>send</button>
-                </div>
-            </div>}
-
-            {tab==="Bad" && <div className="chat-content">
-                <ul className="chat-messages">
-                    {badMessages.map((msg, index)=>(
-                        <li className={`message ${username === username && "self"}`} key={index}>
-                            {/* {chat.senderName !== userData.username && <div className="avatar">Incoming</div>} */}
-                            <div className="message-data">
-                                <p key={index}>{msg.content}</p>
-                            </div>
-                            {<div className="avatar self">{msg.username}</div>}
-                        </li>
-                    ))}
-                    <div ref={messagesEndRef} />
-                </ul>
-
-                <div className="send-message">
-                    <input type="text" className="input-message" placeholder="enter the message" value={badMessageText} onChange={(e) => setBadMessageText(e.target.value)} onKeyDown={handleKeyDown} ref={inputRef}/> 
-                    <button type="button" className="send-button" onClick={() => handleSendMessage(badMessageText, 'Bad')}>send</button>
-                </div>
-            </div>}
-
-            {tab==="Pos" && <div className="chat-content">
-                <ul className="chat-messages">
-                    {posMessages.map((msg, index)=>(
-                        <li className={`message ${username === username && "self"}`} key={index}>
-                            {/* {chat.senderName !== userData.username && <div className="avatar">Incoming</div>} */}
-                            <div className="message-data">
-                                <p key={index}>{msg.content}</p>
-                            </div>
-                            {<div className="avatar self">{msg.username}</div>}
-                        </li>
-                    ))}
-                    <div ref={messagesEndRef} />
-                </ul>
-
-                <div className="send-message">
-                    <input type="text" className="input-message" placeholder="enter the message" value={posMessageText} onChange={(e) => setPosMessageText(e.target.value)} onKeyDown={handleKeyDown} ref={inputRef}/> 
-                    <button type="button" className="send-button" onClick={() => handleSendMessage(posMessageText, 'Pos')}>send</button>
-                </div>
-            </div>}
-
-            {tab==="Blunder" && <div className="chat-content">
-                <ul className="chat-messages">
-                    {blunderMessages.map((msg, index)=>(
-                        <li className={`message ${username === username && "self"}`} key={index}>
-                            {/* {chat.senderName !== userData.username && <div className="avatar">Incoming</div>} */}
-                            <div className="message-data">
-                                <p key={index}>{msg.content}</p>
-                            </div>
-                            {<div className="avatar self">{msg.username}</div>}
-                        </li>
-                    ))}
-                    <div ref={messagesEndRef} />
-                </ul>
-
-                <div className="send-message">
-                    <input type="text" className="input-message" placeholder="enter the message" value={blunderMessageText} onChange={(e) => setBlunderMessageText(e.target.value)} onKeyDown={handleKeyDown} ref={inputRef}/> 
-                    <button type="button" className="send-button" onClick={() => handleSendMessage(blunderMessageText, 'Blunder')}>send</button>
-                </div>
-            </div>}
-
+            <div>
+              <h4>To Improve</h4>
+              <button
+                type="button"
+                className="addButton"
+                onClick={() => this.CreateCard("To Improve", "")}
+              >
+                +
+              </button>
+              {this.state.Cards.map((card, idx) => {
+                if (card.type === "To Improve") {
+                  return (
+                    <Card
+                      key={"To Improve" + idx}
+                      idx={idx}
+                      cardId={card.id}
+                      value={card.input}
+                      userInput={this.userInput}
+                      validateInput={this.validateInput}
+                      MoveLeft={this.MoveLeft}
+                      Delete={this.Delete}
+                      MoveRight={this.MoveRight}
+                      likesCount={card.likes}
+                      dislikesCount={card.dislikes}
+                      handleLikes={this.handleLikes}
+                      handleDislikes={this.handleDislikes}
+                      color={"toImprove"}
+                    />
+                  );
+                } else {
+                  return null;
+                }
+              })}
+            </div>
+            <div>
+              <h4>Action Items</h4>
+              <button
+                type="button"
+                className="addButton"
+                onClick={() => this.CreateCard("Action Items", "")}
+              >
+                +
+              </button>
+              {this.state.Cards.map((card, idx) => {
+                if (card.type === "Action Items") {
+                  return (
+                    <Card
+                      key={"Action Items" + idx}
+                      idx={idx}
+                      cardId={card.id}
+                      value={card.input}
+                      userInput={this.userInput}
+                      validateInput={this.validateInput}
+                      MoveLeft={this.MoveLeft}
+                      Delete={this.Delete}
+                      MoveRight={this.MoveRight}
+                      likesCount={card.likes}
+                      dislikesCount={card.dislikes}
+                      handleLikes={this.handleLikes}
+                      handleDislikes={this.handleDislikes}
+                      color={"actionItems"}
+                    />
+                  );
+                } else {
+                  return null;
+                }
+              })}
+            </div>
+          </div>
         </div>
-        
-        </div>
-  );
+      </div>
+    );
+  }
 }
 
-export default ChatRoom;
-
-
-
-
-
+export default App;

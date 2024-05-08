@@ -1,0 +1,168 @@
+body,
+html {
+  padding: 0;
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #000000;
+}
+
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+.App {
+  max-width: 1200px;
+  padding: 0 0.25rem;
+  margin: auto;
+  font-family: "Roboto", sans-serif;
+}
+
+.header-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.header-btn-container h2 {
+  margin-right: 20px;
+}
+
+.addButton {
+  width: 350px;
+  background: #e2e1e1;
+  box-shadow: 2px 2px grey;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  padding: 10px 15px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.addButton:hover {
+  background: #ddd;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.BoardItem {
+  min-height: 100px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  margin-top: 10px;
+  color: #fff;
+  padding: 20px;
+}
+
+.BoardItem textarea {
+  background: transparent;
+  border: 0;
+  font-size: 1rem;
+  color: #fff;
+  min-height: 60px;
+  resize: none;
+  overflow: visible;
+}
+
+.BoardItem textarea::placeholder {
+  transition: 0.3s ease all;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.BoardItem textarea:focus::placeholder {
+  color: rgba(255, 255, 255, 0);
+  transition: 0.3s ease all;
+}
+
+.FunctionNav {
+  display: flex;
+  justify-content: space-between;
+}
+
+.FunctionNav button {
+  background: transparent;
+  border: none;
+  line-height: 1;
+  padding: 0;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+}
+
+.FunctionNav button:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.flexform {
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-align: center;
+}
+
+.btn-cntr {
+  text-align: center;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.ChangeLayout {
+  background: rgba(159, 214, 180, 0);
+  color: rgba(159, 214, 180, 1);
+  border: 1px solid rgba(159, 214, 180, 1);
+  padding: 10px 15px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.ChangeLayout:hover {
+  background: rgba(159, 214, 180, 1);
+  color: #fff;
+}
+
+.Rotate-2 {
+  transform: rotate(180deg);
+}
+
+textarea {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+}
+
+.wentWell {
+  background: #01dd89;
+  margin: 5px;
+}
+
+.toImprove {
+  background: #f3316b;
+  margin: 5px;
+}
+
+.actionItems {
+  background: #c62fda;
+  margin: 5px;
+}
