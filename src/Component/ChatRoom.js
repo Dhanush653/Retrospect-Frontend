@@ -1,48 +1,25 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { io } from 'socket.io-client';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom'; // Import useParams
+import Card from './Card';
 import './ChatRoom.css'; // Import CSS file
-import Header from "./LoginHeader"
 
-// Import or define MessageSection component
-const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSendMessage }) => (
-    <div className="message-section">
-        <h3>{title}</h3>
-        <div className="messages">
-            {messages.map((msg, index) => (
-                <p key={index}>{msg.username}: {msg.content}</p>
-            ))}
-        </div>
-        <div className="input-area">
-            <textarea
-                value={inputValue}
-                onChange={(e) => onInputChange(e.target.value)}
-                placeholder={`Type your ${title} message here...`}
-                rows="3"
-            />
-            <button className="send-button" onClick={onSendMessage}>Send</button>
-        </div>
-    </div>
-));
 
-function ChatRoom() {
+function App() {
     const { roomId } = useParams();
     const username = localStorage.getItem('userName');
-    const [messageData, setMessageData] = useState([]);
-    const [goodMessages, setGoodMessages] = useState([]);
-    const [badMessages, setBadMessages] = useState([]);
-    const [posMessages, setPosMessages] = useState([]);
-    const [blunderMessages, setBlunderMessages] = useState([]);
+    const [cards, setCards] = useState([]);
     const [messageInputs, setMessageInputs] = useState({
-        Good: '',
-        Bad: '',
-        Pos: '',
-        Blunder: ''
+        wentWell: '',
+        toImprove: '',
+        actionItems: '',
+        positives: ''
     });
 
     // Using useRef to manage the socket instance
     const socketRef = useRef(null);
 
+    // Socket initialization
     useEffect(() => {
         // Initialize socket only once
         if (!socketRef.current) {
@@ -55,23 +32,18 @@ function ChatRoom() {
 
             socketRef.current.on('receive_message', (data) => {
                 console.log('Received message from server:', data);
-                switch (data.contentType) {
-                    case 'Good':
-                        setGoodMessages(prev => [...prev, data]);
-                        break;
-                    case 'Bad':
-                        setBadMessages(prev => [...prev, data]);
-                        break;
-                    case 'Pos':
-                        setPosMessages(prev => [...prev, data]);
-                        break;
-                    case 'Blunder':
-                        setBlunderMessages(prev => [...prev, data]);
-                        break;
-                    default:
-                        setMessageData(prev => [...prev, data]);
-                        break;
-                }
+                const { type, content } = data;
+                const newCards = [
+                    ...cards,
+                    {
+                        id: Math.random().toString(36).substring(7),
+                        type: type,
+                        input: content,
+                        likes: 0,
+                        dislikes: 0
+                    }
+                ];
+                setCards(newCards);
             });
 
             socketRef.current.on('disconnect', () => {
@@ -86,116 +58,227 @@ function ChatRoom() {
                 socketRef.current = null;
             }
         };
-    }, [roomId, username]); // Dependencies to recreate the socket if these change
+    }, [roomId, username, cards]); // Dependencies to recreate the socket if these change
 
-    const handleInputChange = (value, category) => {
-        setMessageInputs(prev => ({ ...prev, [category]: value }));
+    // User input change handler
+    const userInput = (e, idx) => {
+        let newCards = [...cards];
+        newCards[idx].input = e.target.value;
+        setCards(newCards);
     };
 
-    const handleSendMessage = (category) => {
-        if (socketRef.current && messageInputs[category].trim()) {
-            const messageContent = messageInputs[category];
-            socketRef.current.emit('message', { content: messageContent, contentType: category, room: roomId, username });
-            handleInputChange('', category); // Clear input after sending
+    // Validate input
+    const validateInput = (e) => {
+        if (e.target.value === "") {
+            window.alert("Input required");
         }
     };
 
-    const styles = `
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
+    // Delete card
+    const deleteCard = (id) => {
+        setCards(cards.filter(card => card.id !== id));
+    };
+
+    // Create new card
+    const createCard = (type, input) => {
+        const newCards = [
+            ...cards,
+            {
+                id: Math.random().toString(36).substring(7),
+                type: type,
+                input: input,
+                likes: 0,
+                dislikes: 0
+            }
+        ];
+        setCards(newCards);
+        if (socketRef.current) {
+            socketRef.current.emit('message', { content: input, contentType: type, room: roomId, username });
         }
-        
-        .chat-area {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Creates as many columns as fit, each at least 250px wide */
-            gap: 88px; /* Space between boxes */
-            width: 100%;
+    };
+
+    // Move card to the left
+    const moveLeft = (id, idx) => {
+        let newCards = [...cards];
+        for (let card of newCards) {
+            if (card.id === id && card.type === "Went Well") {
+                card.type = "Action Items";
+            } else if (card.id === id && card.type === "To Improve") {
+                card.type = "Went Well";
+            } else if (card.id === id && card.type === "Action Items") {
+                card.type = "To Improve";
+            } else if (card.id === id && card.type === "Positives") {
+                card.type = "Action Items";
+            }
         }
-        
-        .message-section {
-            flex: 1 1 20%; /* Adjust the '20%' to increase or decrease the number of boxes per row */
-            min-width: 300px; /* Minimum width of 300px for each section */
-            border: 1px solid gray;
-            padding: 10px;
-            margin:10px;
-            padding:10px;
-            min-height: 200px; /* Consistent height */
-        
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        newCards.push(newCards[idx]);
+        newCards.splice(idx, 1);
+        setCards(newCards);
+    };
+
+    // Move card to the right
+    const moveRight = (id, idx) => {
+        let newCards = [...cards];
+        for (let card of newCards) {
+            if (card.id === id && card.type === "Went Well") {
+                card.type = "To Improve";
+            } else if (card.id === id && card.type === "To Improve") {
+                card.type = "Action Items";
+            } else if (card.id === id && card.type === "Action Items") {
+                card.type = "Went Well";
+            } else if (card.id === id && card.type === "Positives") {
+                card.type = "Went Well";
+            }
         }
-        
-        .messages {
-            height: 200px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-            padding: 5px;
-            background: #f0f0f0;
-            margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .input-area {
-            position: relative;
-            display: flex;
-        }
-        
-        textarea {
-            flex-grow: 1;
-            padding-right: 50px; /* space for the button */
-        }
-        button {
-            position: absolute;
-            right: 10px; /* distance from right edge of the textarea */
-            top: 50%; /* align button vertically */
-            transform: translateY(-50%); /* center button vertically */
-            height: 50%; /* make button height smaller than textarea */
-            background-color: green;
-            color: white;
-        }
-    `;
+        newCards.push(newCards[idx]);
+        newCards.splice(idx, 1);
+        setCards(newCards);
+    };
+
+    // Handle likes
+    const handleLikes = (idx) => {
+        let newCards = [...cards];
+        newCards[idx].likes++;
+        setCards(newCards);
+    };
+
+    // Handle dislikes
+    const handleDislikes = (idx) => {
+        let newCards = [...cards];
+        newCards[idx].dislikes++;
+        setCards(newCards);
+    };
 
     return (
-        <div>
-          <Header/>
-            <style>{styles}</style>
-            <div className="container">
-                <div className="chat-area">
-                    <MessageSection
-                        title="Good"
-                        messages={goodMessages}
-                        inputValue={messageInputs.Good}
-                        onInputChange={(value) => handleInputChange(value, 'Good')}
-                        onSendMessage={() => handleSendMessage('Good')}
-                    />
-                    <MessageSection
-                        title="Bad"
-                        messages={badMessages}
-                        inputValue={messageInputs.Bad}
-                        onInputChange={(value) => handleInputChange(value, 'Bad')}
-                        onSendMessage={() => handleSendMessage('Bad')}
-                    />
-                    <MessageSection
-                        title="Pos"
-                        messages={posMessages}
-                        inputValue={messageInputs.Pos}
-                        onInputChange={(value) => handleInputChange(value, 'Pos')}
-                        onSendMessage={() => handleSendMessage('Pos')}
-                    />
-                    <MessageSection
-                        title="Blunder"
-                        messages={blunderMessages}
-                        inputValue={messageInputs.Blunder}
-                        onInputChange={(value) => handleInputChange(value, 'Blunder')}
-                        onSendMessage={() => handleSendMessage('Blunder')}
-                    />
+        <div className="App">
+            <h2>Retro Board</h2>
+            <div className="text-center">
+                <div className="row">
+                    <div>
+                        <button className="addButton wentWell" onClick={() => createCard("Went Well", "")}>
+                            <h4>What Went Well</h4>
+                            <span>+</span>
+                        </button>
+                        {cards.map((card, idx) => {
+                            if (card.type === "Went Well") {
+                                return (
+                                    <Card
+                                        key={"Went Well" + idx}
+                                        idx={idx}
+                                        cardId={card.id}
+                                        value={card.input}
+                                        userInput={userInput}
+                                        validateInput={validateInput}
+                                        moveLeft={moveLeft}
+                                        deleteCard={deleteCard}
+                                        moveRight={moveRight}
+                                        likesCount={card.likes}
+                                        dislikesCount={card.dislikes}
+                                        handleLikes={handleLikes}
+                                        handleDislikes={handleDislikes}
+                                        color={"wentWell"}
+                                    />
+                                );
+                            } else {
+                                return null;
+                            }
+                        })}
+                    </div>
+                    <div>
+                        <button className="addButton toImprove" onClick={() => createCard("To Improve", "")}>
+                            <h4>What Went Wrong</h4>
+                            <span>+</span>
+                        </button>
+                        {cards.map((card, idx) => {
+                            if (card.type === "To Improve") {
+                                return (
+                                    <Card
+                                        key={"To Improve" + idx}
+                                        idx={idx}
+                                        cardId={card.id}
+                                        value={card.input}
+                                        userInput={userInput}
+                                        validateInput={validateInput}
+                                        moveLeft={moveLeft}
+                                        deleteCard={deleteCard}
+                                        moveRight={moveRight}
+                                        likesCount={card.likes}
+                                        dislikesCount={card.dislikes}
+                                        handleLikes={handleLikes}
+                                        handleDislikes={handleDislikes}
+                                        color={"toImprove"}
+                                    />
+                                );
+                            } else {
+                                return null;
+                            }
+                        })}
+                    </div>
+                    <div>
+                        <button className="addButton actionItems" onClick={() => createCard("Action Items", "")}>
+                            <h4>Blunders</h4>
+                            <span>+</span>
+                        </button>
+                        {cards.map((card, idx) => {
+                            if (card.type === "Action Items") {
+                                return (
+                                    <Card
+                                        key={"Action Items" + idx}
+                                        idx={idx}
+                                        cardId={card.id}
+                                        value={card.input}
+                                        userInput={userInput}
+                                        validateInput={validateInput}
+                                        moveLeft={moveLeft}
+                                        deleteCard={deleteCard}
+                                        moveRight={moveRight}
+                                        likesCount={card.likes}
+                                        dislikesCount={card.dislikes}
+                                        handleLikes={handleLikes}
+                                        handleDislikes={handleDislikes}
+                                        color={"actionItems"}
+                                    />
+                                );
+                            } else {
+                                return null;
+                            }
+                        })}
+                    </div>
+                    <div>
+                        <button className="addButton positives" onClick={() => createCard("Positives", "")}>
+                            <h4>Positives</h4>
+                            <span>+</span>
+                        </button>
+                        {cards.map((card, idx) => {
+                            if (card.type === "Positives") {
+                                return (
+                                    <Card
+                                        key={"Positives" + idx}
+                                        idx={idx}
+                                        cardId={card.id}
+                                        value={card.input}
+                                        userInput={userInput}
+                                        validateInput={validateInput}
+                                        moveLeft={moveLeft}
+                                        deleteCard={deleteCard}
+                                        moveRight={moveRight}
+                                        likesCount={card.likes}
+                                        dislikesCount={card.dislikes}
+                                        handleLikes={handleLikes}
+                                        handleDislikes={handleDislikes}
+                                        color={"positives"}
+                                    />
+                                );
+                            } else {
+                                return null;
+                            }
+                        })}
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-export default ChatRoom;
+export default App;
+
