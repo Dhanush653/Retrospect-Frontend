@@ -75,7 +75,7 @@ export default function ButtonAppBar() {
 
   return (
     <Box sx={{ flexGrow: 0.5 }}>
-      <AppBar position="static" sx={{ backgroundColor: 'black' }}>
+      <AppBar position="static" sx={{ background: 'linear-gradient(114.9deg, rgb(34, 34, 34) 8.3%, rgb(0, 40, 60) 41.6%, rgb(0, 143, 213) 93.4%)' }}>
         <Toolbar>
           <IconButton
             size="large"
@@ -123,7 +123,7 @@ export default function ButtonAppBar() {
                 {userEmail}
               </Typography>
               {(isAdmin || isAdminPage) && ( 
-                <Button color="inherit" style={{ fontWeight: 'bold', backgroundColor: 'green', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button>
+                <Button color="inherit" style={{ fontWeight: 'bold', background: 'linear-gradient(110.1deg, rgb(241, 115, 30) 18.9%, rgb(231, 29, 54) 90.7%)', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button>
               )}
               <Createroom open={openCreateRoomDialog} onClose={handleCloseCreateRoomDialog} /> 
             </>

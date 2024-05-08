@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 const LoginHeader = () => {
   return (
     <Box sx={{ flexGrow: 0.5 }}>
-      <AppBar position="static" sx={{ backgroundColor: 'black' }}>
+      <AppBar position="static" sx={{ background: 'linear-gradient(114.9deg, rgb(34, 34, 34) 8.3%, rgb(0, 40, 60) 41.6%, rgb(0, 143, 213) 93.4%)' }}>
         <Toolbar>
           <IconButton
             size="large"

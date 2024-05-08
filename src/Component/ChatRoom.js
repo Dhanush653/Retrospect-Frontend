@@ -112,7 +112,7 @@ class App extends Component {
         <div className="text-center">
           <div className="row">
             <div>
-              <h4>Went Well</h4>
+              <h4>What Went Well</h4>
               <button
                 type="button"
                 className="addButton"
@@ -146,7 +146,7 @@ class App extends Component {
               })}
             </div>
             <div>
-              <h4>To Improve</h4>
+              <h4>What Went Wrong</h4>
               <button
                 type="button"
                 className="addButton"
