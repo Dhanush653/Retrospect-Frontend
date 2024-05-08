@@ -1,223 +1,201 @@
-import React, { Component } from "react";
-import "./ChatRoom.css";
-import Card from "./Card";
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import React, { useState, useEffect, useRef, memo } from 'react';
+import { io } from 'socket.io-client';
+import { useParams } from 'react-router-dom';
+import './ChatRoom.css'; // Import CSS file
+import Header from "./LoginHeader"
 
-class App extends Component {
-  state = {
-    categories: {
-      wentWell: [],
-      toImprove: [],
-      actionItems: []
-    },
-    userInput: "",
-    id: 0,
-    Cards: [],
-    likes: 0,
-    dislikes: 0
-  };
-
-  userInput = (e, idx) => {
-    let newCards = [...this.state.Cards];
-    newCards[idx].input = e.target.value;
-    this.setState({
-      Cards: newCards
-    });
-  };
-
-  validateInput = e => {
-    if (e.target.value === "") {
-      window.alert("input required");
-    }
-  };
-  
-  Delete = id => {
-    this.setState({
-      Cards: this.state.Cards.filter(card => card.id !== id)
-    });
-  };
-
-  CreateCard = (type, input) => {
-    this.setState({
-      Cards: [
-        ...this.state.Cards,
-        {
-          id: this.state.id,
-          type: type,
-          input: input,
-          likes: 0,
-          dislikes: 0
-        }
-      ],
-      id: this.state.id + 1
-    });
-  };
-
-  MoveLeft = (id, idx) => {
-    let newCards = [...this.state.Cards];
-    for (let card of newCards) {
-      if (card.id === id && card.type === "Went Well") {
-        card.type = "Action Items";
-      } else if (card.id === id && card.type === "To Improve") {
-        card.type = "Went Well";
-      } else if (card.id === id && card.type === "Action Items") {
-        card.type = "To Improve";
-      }
-    }
-    newCards.push(newCards[idx]);
-    newCards.splice(idx, 1);
-    this.setState({
-      Cards: newCards
-    });
-  };
-
-  MoveRight = (id, idx) => {
-    let newCards = [...this.state.Cards];
-    for (let card of newCards) {
-      if (card.id === id && card.type === "Went Well") {
-        card.type = "To Improve";
-      } else if (card.id === id && card.type === "To Improve") {
-        card.type = "Action Items";
-      } else if (card.id === id && card.type === "Action Items") {
-        card.type = "Went Well";
-      }
-    }
-    newCards.push(newCards[idx]);
-    newCards.splice(idx, 1);
-    this.setState({
-      Cards: newCards
-    });
-  };
-
-  handleLikes = idx => {
-    let newCards = [...this.state.Cards];
-    newCards[idx].likes++;
-    this.setState({
-      Cards: newCards
-    });
-  };
-
-  handleDislikes = idx => {
-    let newCards = [...this.state.Cards];
-    newCards[idx].dislikes++;
-    this.setState({
-      Cards: newCards
-    });
-  };
-  
-  render() {
-    return (
-      <div className="App">
-        <h2>Retro Board</h2> <br />
-        <div className="text-center">
-          <div className="row">
-            <div>
-              <h4>What Went Well</h4>
-              <button
-                type="button"
-                className="addButton"
-                onClick={() => this.CreateCard("Went Well", "")}
-              >
-                +
-              </button>
-              {this.state.Cards.map((card, idx) => {
-                if (card.type === "Went Well") {
-                  return (
-                    <Card
-                      key={"Went Well" + idx}
-                      idx={idx}
-                      cardId={card.id}
-                      value={card.input}
-                      userInput={this.userInput}
-                      validateInput={this.validateInput}
-                      MoveLeft={this.MoveLeft}
-                      Delete={this.Delete}
-                      MoveRight={this.MoveRight}
-                      likesCount={card.likes}
-                      dislikesCount={card.dislikes}
-                      handleLikes={this.handleLikes}
-                      handleDislikes={this.handleDislikes}
-                      color={"wentWell"}
-                    />
-                  );
-                } else {
-                  return null;
-                }
-              })}
-            </div>
-            <div>
-              <h4>What Went Wrong</h4>
-              <button
-                type="button"
-                className="addButton"
-                onClick={() => this.CreateCard("To Improve", "")}
-              >
-                +
-              </button>
-              {this.state.Cards.map((card, idx) => {
-                if (card.type === "To Improve") {
-                  return (
-                    <Card
-                      key={"To Improve" + idx}
-                      idx={idx}
-                      cardId={card.id}
-                      value={card.input}
-                      userInput={this.userInput}
-                      validateInput={this.validateInput}
-                      MoveLeft={this.MoveLeft}
-                      Delete={this.Delete}
-                      MoveRight={this.MoveRight}
-                      likesCount={card.likes}
-                      dislikesCount={card.dislikes}
-                      handleLikes={this.handleLikes}
-                      handleDislikes={this.handleDislikes}
-                      color={"toImprove"}
-                    />
-                  );
-                } else {
-                  return null;
-                }
-              })}
-            </div>
-            <div>
-              <h4>Action Items</h4>
-              <button
-                type="button"
-                className="addButton"
-                onClick={() => this.CreateCard("Action Items", "")}
-              >
-                +
-              </button>
-              {this.state.Cards.map((card, idx) => {
-                if (card.type === "Action Items") {
-                  return (
-                    <Card
-                      key={"Action Items" + idx}
-                      idx={idx}
-                      cardId={card.id}
-                      value={card.input}
-                      userInput={this.userInput}
-                      validateInput={this.validateInput}
-                      MoveLeft={this.MoveLeft}
-                      Delete={this.Delete}
-                      MoveRight={this.MoveRight}
-                      likesCount={card.likes}
-                      dislikesCount={card.dislikes}
-                      handleLikes={this.handleLikes}
-                      handleDislikes={this.handleDislikes}
-                      color={"actionItems"}
-                    />
-                  );
-                } else {
-                  return null;
-                }
-              })}
-            </div>
-          </div>
+// Import or define MessageSection component
+const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSendMessage }) => (
+    <div className="message-section">
+        <h3>{title}</h3>
+        <div className="messages">
+            {messages.map((msg, index) => (
+                <p key={index}>{msg.username}: {msg.content}</p>
+            ))}
         </div>
-      </div>
+        <div className="input-area">
+            <textarea
+                value={inputValue}
+                onChange={(e) => onInputChange(e.target.value)}
+                placeholder={`Type your ${title} message here...`}
+                rows="3"
+            />
+            <button className="send-button" onClick={onSendMessage}>Send</button>
+        </div>
+    </div>
+));
+
+function ChatRoom() {
+    const { roomId } = useParams();
+    const username = localStorage.getItem('userName');
+    const [messageData, setMessageData] = useState([]);
+    const [goodMessages, setGoodMessages] = useState([]);
+    const [badMessages, setBadMessages] = useState([]);
+    const [posMessages, setPosMessages] = useState([]);
+    const [blunderMessages, setBlunderMessages] = useState([]);
+    const [messageInputs, setMessageInputs] = useState({
+        Good: '',
+        Bad: '',
+        Pos: '',
+        Blunder: ''
+    });
+
+    // Using useRef to manage the socket instance
+    const socketRef = useRef(null);
+
+    useEffect(() => {
+        // Initialize socket only once
+        if (!socketRef.current) {
+            const socketUrl = `http://192.168.0.231:8085?room=${roomId}&username=${username}`;
+            socketRef.current = io(socketUrl, { transports: ['websocket'], upgrade: false });
+
+            socketRef.current.on('connect', () => {
+                console.log('Socket connected');
+            });
+
+            socketRef.current.on('receive_message', (data) => {
+                console.log('Received message from server:', data);
+                switch (data.contentType) {
+                    case 'Good':
+                        setGoodMessages(prev => [...prev, data]);
+                        break;
+                    case 'Bad':
+                        setBadMessages(prev => [...prev, data]);
+                        break;
+                    case 'Pos':
+                        setPosMessages(prev => [...prev, data]);
+                        break;
+                    case 'Blunder':
+                        setBlunderMessages(prev => [...prev, data]);
+                        break;
+                    default:
+                        setMessageData(prev => [...prev, data]);
+                        break;
+                }
+            });
+
+            socketRef.current.on('disconnect', () => {
+                console.log('Socket disconnected');
+            });
+        }
+
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                console.log('Socket disconnected on cleanup');
+                socketRef.current = null;
+            }
+        };
+    }, [roomId, username]); // Dependencies to recreate the socket if these change
+
+    const handleInputChange = (value, category) => {
+        setMessageInputs(prev => ({ ...prev, [category]: value }));
+    };
+
+    const handleSendMessage = (category) => {
+        if (socketRef.current && messageInputs[category].trim()) {
+            const messageContent = messageInputs[category];
+            socketRef.current.emit('message', { content: messageContent, contentType: category, room: roomId, username });
+            handleInputChange('', category); // Clear input after sending
+        }
+    };
+
+    const styles = `
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .chat-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Creates as many columns as fit, each at least 250px wide */
+            gap: 88px; /* Space between boxes */
+            width: 100%;
+        }
+        
+        .message-section {
+            flex: 1 1 20%; /* Adjust the '20%' to increase or decrease the number of boxes per row */
+            min-width: 300px; /* Minimum width of 300px for each section */
+            border: 1px solid gray;
+            padding: 10px;
+            margin:10px;
+            padding:10px;
+            min-height: 200px; /* Consistent height */
+        
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .messages {
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: #f0f0f0;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .input-area {
+            position: relative;
+            display: flex;
+        }
+        
+        textarea {
+            flex-grow: 1;
+            padding-right: 50px; /* space for the button */
+        }
+        button {
+            position: absolute;
+            right: 10px; /* distance from right edge of the textarea */
+            top: 50%; /* align button vertically */
+            transform: translateY(-50%); /* center button vertically */
+            height: 50%; /* make button height smaller than textarea */
+            background-color: green;
+            color: white;
+        }
+    `;
+
+    return (
+        <div>
+          <Header/>
+            <style>{styles}</style>
+            <div className="container">
+                <div className="chat-area">
+                    <MessageSection
+                        title="Good"
+                        messages={goodMessages}
+                        inputValue={messageInputs.Good}
+                        onInputChange={(value) => handleInputChange(value, 'Good')}
+                        onSendMessage={() => handleSendMessage('Good')}
+                    />
+                    <MessageSection
+                        title="Bad"
+                        messages={badMessages}
+                        inputValue={messageInputs.Bad}
+                        onInputChange={(value) => handleInputChange(value, 'Bad')}
+                        onSendMessage={() => handleSendMessage('Bad')}
+                    />
+                    <MessageSection
+                        title="Pos"
+                        messages={posMessages}
+                        inputValue={messageInputs.Pos}
+                        onInputChange={(value) => handleInputChange(value, 'Pos')}
+                        onSendMessage={() => handleSendMessage('Pos')}
+                    />
+                    <MessageSection
+                        title="Blunder"
+                        messages={blunderMessages}
+                        inputValue={messageInputs.Blunder}
+                        onInputChange={(value) => handleInputChange(value, 'Blunder')}
+                        onSendMessage={() => handleSendMessage('Blunder')}
+                    />
+                </div>
+            </div>
+        </div>
     );
-  }
 }
 
-export default App;
+export default ChatRoom;
