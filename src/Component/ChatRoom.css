@@ -1,4 +1,4 @@
-body,
+ body,
 html {
   padding: 0;
   margin: 0;
@@ -57,6 +57,7 @@ html {
 }
 
 .BoardItem {
+  position: relative;
   height: 150px;
   width: 250px;
   display: flex;
@@ -171,3 +172,21 @@ textarea {
   background: #f0a500; 
   margin: 5px;
 }
+
+.sendButton {
+  background: #4caf50; 
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.sendButton:hover {
+  background-color: #45a049;
+} 
+

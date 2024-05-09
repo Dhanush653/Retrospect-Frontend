@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, memo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { useParams } from 'react-router-dom'; // Import useParams
+import { useParams } from 'react-router-dom';
 import Card from './Card';
-import './ChatRoom.css'; // Import CSS file
+import './ChatRoom.css';
 
+function ChatRoom() {
 
-function App() {
     const { roomId } = useParams();
     const username = localStorage.getItem('userName');
     const [cards, setCards] = useState([]);
@@ -16,12 +16,9 @@ function App() {
         positives: ''
     });
 
-    // Using useRef to manage the socket instance
     const socketRef = useRef(null);
 
-    // Socket initialization
     useEffect(() => {
-        // Initialize socket only once
         if (!socketRef.current) {
             const socketUrl = `http://192.168.0.231:8085?room=${roomId}&username=${username}`;
             socketRef.current = io(socketUrl, { transports: ['websocket'], upgrade: false });
@@ -58,28 +55,24 @@ function App() {
                 socketRef.current = null;
             }
         };
-    }, [roomId, username, cards]); // Dependencies to recreate the socket if these change
+    }, [roomId, username]);
 
-    // User input change handler
     const userInput = (e, idx) => {
         let newCards = [...cards];
         newCards[idx].input = e.target.value;
         setCards(newCards);
     };
 
-    // Validate input
     const validateInput = (e) => {
         if (e.target.value === "") {
             window.alert("Input required");
         }
     };
 
-    // Delete card
     const deleteCard = (id) => {
         setCards(cards.filter(card => card.id !== id));
     };
 
-    // Create new card
     const createCard = (type, input) => {
         const newCards = [
             ...cards,
@@ -92,12 +85,8 @@ function App() {
             }
         ];
         setCards(newCards);
-        if (socketRef.current) {
-            socketRef.current.emit('message', { content: input, contentType: type, room: roomId, username });
-        }
     };
 
-    // Move card to the left
     const moveLeft = (id, idx) => {
         let newCards = [...cards];
         for (let card of newCards) {
@@ -116,7 +105,6 @@ function App() {
         setCards(newCards);
     };
 
-    // Move card to the right
     const moveRight = (id, idx) => {
         let newCards = [...cards];
         for (let card of newCards) {
@@ -135,18 +123,27 @@ function App() {
         setCards(newCards);
     };
 
-    // Handle likes
     const handleLikes = (idx) => {
         let newCards = [...cards];
         newCards[idx].likes++;
         setCards(newCards);
     };
 
-    // Handle dislikes
     const handleDislikes = (idx) => {
         let newCards = [...cards];
         newCards[idx].dislikes++;
         setCards(newCards);
+    };
+
+    const sendMessage = (id, type, input) => {
+        // Send message to backend via socket
+        socketRef.current.emit('send_message', {
+            room: roomId,
+            content: input,
+            contentType: type
+        });
+        // Remove the card after sending the message
+        deleteCard(id);
     };
 
     return (
@@ -177,6 +174,7 @@ function App() {
                                         handleLikes={handleLikes}
                                         handleDislikes={handleDislikes}
                                         color={"wentWell"}
+                                        sendMessage={sendMessage} // Add sendMessage prop
                                     />
                                 );
                             } else {
@@ -207,6 +205,7 @@ function App() {
                                         handleLikes={handleLikes}
                                         handleDislikes={handleDislikes}
                                         color={"toImprove"}
+                                        sendMessage={sendMessage} // Add sendMessage prop
                                     />
                                 );
                             } else {
@@ -237,6 +236,7 @@ function App() {
                                         handleLikes={handleLikes}
                                         handleDislikes={handleDislikes}
                                         color={"actionItems"}
+                                        sendMessage={sendMessage} // Add sendMessage prop
                                     />
                                 );
                             } else {
@@ -267,6 +267,7 @@ function App() {
                                         handleLikes={handleLikes}
                                         handleDislikes={handleDislikes}
                                         color={"positives"}
+                                        sendMessage={sendMessage} // Add sendMessage prop
                                     />
                                 );
                             } else {
@@ -280,5 +281,6 @@ function App() {
     );
 }
 
-export default App;
+export default ChatRoom;
+
 

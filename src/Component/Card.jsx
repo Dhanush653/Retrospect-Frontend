@@ -8,25 +8,28 @@ function Card(props) {
         className="flexform"
         placeholder="Enter Text Here"
         value={props.value}
-        onChange={e => props.userInput(e, props.idx)}
+        onChange={(e) => props.userInput(e, props.idx)}
         onBlur={props.validateInput}
       />
       <br />
       <div className="FunctionNav">
         <button
           onClick={() => {
-            props.MoveLeft(props.cardId, props.idx);
+            props.moveLeft(props.cardId, props.idx);
           }}
         >
           {" "}
-          <i className="fas fa-caret-left left" title="Move card to the left" />
+          <i
+            className="fas fa-caret-left left"
+            title="Move card to the left"
+          />
         </button>
         <button onClick={() => props.handleDislikes(props.idx)}>
           {" "}
           <i className="far fa-thumbs-down" title="Dislikes" />
           {props.dislikesCount}
         </button>
-        <button onClick={() => props.Delete(props.cardId)}>
+        <button onClick={() => props.deleteCard(props.cardId)}>
           {" "}
           <i className="far fa-trash-alt" title="Delete card" />
         </button>
@@ -37,7 +40,7 @@ function Card(props) {
         </button>
         <button
           onClick={() => {
-            props.MoveRight(props.cardId, props.idx);
+            props.moveRight(props.cardId, props.idx);
           }}
         >
           {" "}
@@ -47,8 +50,14 @@ function Card(props) {
           />
         </button>
       </div>
+      {/* Add Send button */}
+      <button className="sendButton" onClick={() => props.sendMessage(props.cardId, props.type, props.value)}>
+        Send
+      </button>
     </div>
   );
 }
 
 export default Card;
+
+

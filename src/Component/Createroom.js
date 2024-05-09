@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, RadioGroup, Radio, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, RadioGroup, Radio, FormControlLabel, IconButton, Box } from '@mui/material';
+import { Add } from '@mui/icons-material'; // Import the Add icon
 import retro from '../Service/RetrospectService'; 
-import img1 from '../Asserts/img1.jpeg';
-import img2 from '../Asserts/img2.jpeg';
-import img3 from '../Asserts/img3.jpeg';
-import img4 from '../Asserts/img4.jpeg';
 
 const Createroom = ({ open, onClose, roomToUpdate }) => {
   const [roomDetails, setRoomDetails] = useState({
     roomDescription: '',
     roomName: '',
-    room_image: '',
-    room_startdate: '',
-    room_enddate: ''
+    access: 'unrestricted', 
+    restrictions: [] 
   });
 
   useEffect(() => {
@@ -22,9 +18,8 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
       setRoomDetails({
         roomDescription: '',
         roomName: '',
-        room_image: '',
-        room_startdate: '',
-        room_enddate: ''
+        access: 'unrestricted',
+        restrictions: []
       });
     }
   }, [roomToUpdate]);
@@ -32,6 +27,23 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRoomDetails({ ...roomDetails, [name]: value });
+  };
+
+  const handleAccessChange = (e) => {
+    setRoomDetails({ ...roomDetails, access: e.target.value, restrictions: [] }); // Reset restrictions when access changes
+  };
+
+  const handleAddRestriction = () => {
+    setRoomDetails({
+      ...roomDetails,
+      restrictions: [...roomDetails.restrictions, ''] // Add an empty string for a new restriction
+    });
+  };
+
+  const handleRestrictionChange = (index, value) => {
+    const newRestrictions = [...roomDetails.restrictions];
+    newRestrictions[index] = value;
+    setRoomDetails({ ...roomDetails, restrictions: newRestrictions });
   };
 
   const handleSubmit = async () => {
@@ -42,14 +54,10 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
         await retro.createRoom(roomDetails);
       }
       onClose();
-      window.location.reload(); 
+       window.location.reload(); 
     } catch (error) {
       console.error('Error creating/updating room:', error);
     }
-  };
-
-  const handleImageChange = (image) => {
-    setRoomDetails({ ...roomDetails, room_image: image });
   };
 
   return (
@@ -74,57 +82,30 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
           fullWidth
           sx={{ marginBottom: '10px' }}
         />
-
-        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-          <TextField
-            label="Start Date"
-            type="date"
-            name="room_startdate"
-            value={roomDetails.room_startdate}
-            onChange={handleChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            sx={{ width: '45%', marginBottom:'3%' }}
-          />
-          <TextField
-            label="End Date"
-            type="date"
-            name="room_enddate"
-            value={roomDetails.room_enddate}
-            onChange={handleChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            sx={{ width: '45%' }}
-          />
-        </div>
-        <FormControl component="fieldset">
-          <RadioGroup
-            row
-            aria-label="select image"
-            name="room_image"
-            value={roomDetails.room_image}
-            onChange={(e) => handleImageChange(e.target.value)}
-          >
-            <Box display="flex" alignItems="center">
-              <Radio value={img1} />
-              <img src={img1} alt="Img 1" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
-            </Box>
-            <Box display="flex" alignItems="center">
-              <Radio value={img2} />
-              <img src={img2} alt="Img 2" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
-            </Box>
-            <Box display="flex" alignItems="center">
-              <Radio value={img3} />
-              <img src={img3} alt="Img 3" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
-            </Box>
-            <Box display="flex" alignItems="center">
-              <Radio value={img4} />
-              <img src={img4} alt="Img 4" style={{ width: 37, height: 37, borderRadius: '50%', marginRight: '10px' }} />
-            </Box>
+        <FormControl component="fieldset" sx={{ marginTop: '10px' }}>
+          <RadioGroup row aria-label="room-access" name="room-access" value={roomDetails.access} onChange={handleAccessChange}>
+            <FormControlLabel value="unrestricted" control={<Radio />} label="Unrestricted" />
+            <FormControlLabel value="restricted" control={<Radio />} label="Restricted" />
           </RadioGroup>
         </FormControl>
+        {roomDetails.access === 'restricted' && (
+          <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+            {roomDetails.restrictions.map((restriction, index) => (
+              <TextField
+                key={index}
+                value={restriction}
+                onChange={(e) => handleRestrictionChange(index, e.target.value)}
+                variant="outlined"
+                fullWidth
+                label={`Restriction ${index + 1}`}
+                sx={{ marginRight: '5px' }}
+              />
+            ))}
+            <IconButton onClick={handleAddRestriction} color="primary" aria-label="add restriction">
+              <Add />
+            </IconButton>
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleSubmit} variant="contained" color="primary">
@@ -139,4 +120,3 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
 };
 
 export default Createroom;
-
