@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, RadioGroup, Radio, FormControlLabel, IconButton, Box } from '@mui/material';
-import { Add } from '@mui/icons-material'; // Import the Add icon
-import retro from '../Service/RetrospectService'; 
+import { Add } from '@mui/icons-material';
+import retro from '../Service/RetrospectService';
 
 const Createroom = ({ open, onClose, roomToUpdate }) => {
   const [roomDetails, setRoomDetails] = useState({
     roomDescription: '',
     roomName: '',
-    access: 'unrestricted', 
-    restrictions: [] 
+    access: 'unrestricted',
+    allowedEmails: [],
+    roomCreatedBy: ''
   });
 
   useEffect(() => {
     if (roomToUpdate) {
-      setRoomDetails(roomToUpdate); 
+      setRoomDetails(roomToUpdate);
     } else {
       setRoomDetails({
         roomDescription: '',
         roomName: '',
         access: 'unrestricted',
-        restrictions: []
+        allowedEmails: [],
+        roomCreatedBy: ''
       });
     }
+    fetchRoomCreatedByFromJWT();
   }, [roomToUpdate]);
 
   const handleChange = (e) => {
@@ -30,20 +33,20 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
   };
 
   const handleAccessChange = (e) => {
-    setRoomDetails({ ...roomDetails, access: e.target.value, restrictions: [] }); // Reset restrictions when access changes
+    setRoomDetails({ ...roomDetails, access: e.target.value, allowedEmails: [] });
   };
 
-  const handleAddRestriction = () => {
+  const handleAddEmail = () => {
     setRoomDetails({
       ...roomDetails,
-      restrictions: [...roomDetails.restrictions, ''] // Add an empty string for a new restriction
+      allowedEmails: [...roomDetails.allowedEmails, '']
     });
   };
 
-  const handleRestrictionChange = (index, value) => {
-    const newRestrictions = [...roomDetails.restrictions];
-    newRestrictions[index] = value;
-    setRoomDetails({ ...roomDetails, restrictions: newRestrictions });
+  const handleEmailChange = (index, value) => {
+    const newEmails = [...roomDetails.allowedEmails];
+    newEmails[index] = value;
+    setRoomDetails({ ...roomDetails, allowedEmails: newEmails });
   };
 
   const handleSubmit = async () => {
@@ -51,12 +54,29 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
       if (roomToUpdate) {
         await retro.updateRoom(roomToUpdate.roomId, roomDetails);
       } else {
-        await retro.createRoom(roomDetails);
+      await retro.createRoom(roomDetails);
       }
       onClose();
-       window.location.reload(); 
+      window.location.reload();
+      console.log(roomDetails);
+    }catch (error) {
+      console.error('Error creating room:', error);
+    }
+  };
+
+  const fetchRoomCreatedByFromJWT = async () => {
+    try {
+      const token = localStorage.getItem('token'); 
+      if (token) {
+        const response = await retro.getUserByToken(token); 
+        const userName = response.data.userName; 
+        setRoomDetails(prevState => ({
+          ...prevState,
+          roomCreatedBy: userName 
+        }));
+      }
     } catch (error) {
-      console.error('Error creating/updating room:', error);
+      console.error('Error fetching user information:', error);
     }
   };
 
@@ -90,18 +110,18 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
         </FormControl>
         {roomDetails.access === 'restricted' && (
           <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-            {roomDetails.restrictions.map((restriction, index) => (
+            {roomDetails.allowedEmails.map((email, index) => (
               <TextField
                 key={index}
-                value={restriction}
-                onChange={(e) => handleRestrictionChange(index, e.target.value)}
+                value={email}
+                onChange={(e) => handleEmailChange(index, e.target.value)}
                 variant="outlined"
                 fullWidth
-                label={`Restriction ${index + 1}`}
+                label={`Email ${index + 1}`}
                 sx={{ marginRight: '5px' }}
               />
             ))}
-            <IconButton onClick={handleAddRestriction} color="primary" aria-label="add restriction">
+            <IconButton onClick={handleAddEmail} color="primary" aria-label="add email">
               <Add />
             </IconButton>
           </Box>

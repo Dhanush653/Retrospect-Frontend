@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Header from './LoginHeader';
 import Box from '@mui/material/Box';
-import { Typography, RadioGroup, FormControlLabel, Radio, TextField, Button, Link as MuiLink } from '@mui/material';
+import { Typography, RadioGroup, FormControlLabel, Radio, TextField, Button, Link as MuiLink, IconButton, InputAdornment } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import RetrospectService from '../Service/RetrospectService';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Registration = () => {
   const [formValue, setformValue] = useState({
@@ -14,6 +15,8 @@ const Registration = () => {
     role: 'user',
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRoleChange = (event) => {
     setformValue({ ...formValue, role: event.target.value });
@@ -38,7 +41,7 @@ const Registration = () => {
         console.log('response from backend', response.data);
         if (response.data === 'You have been signed up successfully') {
           window.alert('Registered Successfully');
-          window.location.href = '/'; // Redirect to "/" after successful registration
+          window.location.href = '/'; 
         }
       })
       .catch((error) => {
@@ -52,6 +55,14 @@ const Registration = () => {
     if (name === 'confirmPassword') {
       setPasswordMatch(formValue.password === value);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
@@ -94,9 +105,9 @@ const Registration = () => {
               value={formValue.name}
               onChange={handleChange}
               variant="outlined"
-              size="small"
+              size="larger"
               placeholder="Enter your name..."
-              sx={{ marginBottom: '20px', '& input': { padding: '5px 35px' }, backgroundColor: 'white' }}
+              sx={{ marginBottom: '20px', '& input': { padding:'5px 10px' }, backgroundColor: 'white', borderRadius:'5px', width:'110%' }}
             />
             <Typography variant="subtitle1" color='white'>Email</Typography>
             <TextField
@@ -106,29 +117,53 @@ const Registration = () => {
               variant="outlined"
               size="small"
               placeholder="Enter your email..."
-              sx={{ marginBottom: '20px', '& input': { padding: '5px 35px' }, backgroundColor: 'white' }}
+              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white' , borderRadius:'5px', width:'110%'  }}
             />
             <Typography variant="subtitle1" color='white'>Password</Typography>
             <TextField
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               name="password"
               value={formValue.password}
               onChange={handleChange}
               variant="outlined"
               size="small"
               placeholder="Enter your password..."
-              sx={{ marginBottom: '20px', '& input': { padding: '5px 35px' }, backgroundColor: 'white' }}
+              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white', borderRadius:'5px', width:'110%'  }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={togglePasswordVisibility}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Typography variant="subtitle1" color='white'>Confirm Password</Typography>
             <TextField
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               name="confirmPassword"
               value={formValue.confirmPassword}
               onChange={handleChange}
               variant="outlined"
               size="small"
               placeholder="Confirm your password..."
-              sx={{ marginBottom: '20px', '& input': { padding: '5px 35px' }, backgroundColor: 'white' }}
+              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white', borderRadius:'5px' , width:'110%' }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={toggleConfirmPasswordVisibility}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             {!passwordMatch && (
               <Typography variant="body2" color="error" gutterBottom>
@@ -139,17 +174,17 @@ const Registration = () => {
             <RadioGroup value={formValue.role} onChange={handleRoleChange} sx={{ marginBottom: '20px' }}>
               <FormControlLabel
               value="admin"
-              control={<Radio />}
+              control={<Radio sx={{ color: 'white' }}/>}
               label={<Typography style={{ color: 'white' }}>Admin</Typography>}
               />
               <FormControlLabel
               value="user"
-              control={<Radio />}
+              control={<Radio sx={{ color: 'white' }} />}
               label={<Typography style={{ color: 'white' }}>User</Typography>}
               />
 
             </RadioGroup>
-            <Button type="submit" variant="contained" sx={{ borderRadius: '20px', background:'#f95959' }}>
+            <Button type="submit" variant="contained" sx={{ borderRadius: '20px', background:'#f95959',marginLeft:'35%' }}>
               Sign Up
             </Button>
           </form>

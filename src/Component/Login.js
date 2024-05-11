@@ -56,8 +56,7 @@ const Login = () => {
         const userId = userDetailsResponse.data.userId;
         const userRole = userDetailsResponse.data.userRole;
 
-        console.log(userDetailsResponse.data)
-  
+        console.log(userDetailsResponse)
         navigate(`/dashboard/${userId}/${userRole}`);
       } else {
         setError("Invalid credentials");
@@ -72,7 +71,7 @@ const Login = () => {
       <Header userEmail={userEmail} />
       <Box
         sx={{
-          minHeight: '100vh',
+          minHeight: '89vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -101,7 +100,14 @@ const Login = () => {
             LOGIN
           </Typography>
           <Box display='flex' alignItems='center' marginTop={4} marginBottom={4}>
-            <TextField name="email" value={formData.email} onChange={handleChange} variant='outlined' size='small' placeholder='Enter your Email...' sx={{ '& input': { paddingTop:'7px', paddingBottom:'7px', paddingLeft:'6px', paddingRight:'67px' }, backgroundColor: 'white', borderRadius:'8px' }} />
+            <TextField 
+            name="email" 
+            value={formData.email} 
+            onChange={handleChange} 
+            variant='outlined' 
+            size='small' 
+            placeholder='Enter your Email...' 
+            sx={{ '& input': { paddingTop:'7px', paddingBottom:'7px', paddingLeft:'6px', paddingRight:'67px' }, backgroundColor: 'white', borderRadius:'5px', width:'100%' }} />
           </Box>
           <Box display='flex' alignItems='center' marginTop={2} marginBottom={4}>
             <TextField 
@@ -112,7 +118,7 @@ const Login = () => {
               variant='outlined' 
               size='small' 
               placeholder='Enter your Password...' 
-              sx={{ '& input': { padding: '7px 7px' }, backgroundColor: 'white', borderRadius:'8px' }} 
+              sx={{ '& input': { padding: '7px 7px' }, backgroundColor: 'white', borderRadius:'5px', width:'100%' }} 
               InputProps={{ 
                 endAdornment: (
                   <InputAdornment position="end">
