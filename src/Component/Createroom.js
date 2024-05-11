@@ -54,25 +54,24 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
       if (roomToUpdate) {
         await retro.updateRoom(roomToUpdate.roomId, roomDetails);
       } else {
-      await retro.createRoom(roomDetails);
+        await retro.createRoom(roomDetails);
       }
       onClose();
       window.location.reload();
-      console.log(roomDetails);
-    }catch (error) {
+    } catch (error) {
       console.error('Error creating room:', error);
     }
   };
 
   const fetchRoomCreatedByFromJWT = async () => {
     try {
-      const token = localStorage.getItem('token'); 
+      const token = localStorage.getItem('token');
       if (token) {
-        const response = await retro.getUserByToken(token); 
-        const userName = response.data.userName; 
+        const response = await retro.getUserByToken(token);
+        const userName = response.data.userName;
         setRoomDetails(prevState => ({
           ...prevState,
-          roomCreatedBy: userName 
+          roomCreatedBy: userName
         }));
       }
     } catch (error) {
@@ -102,29 +101,33 @@ const Createroom = ({ open, onClose, roomToUpdate }) => {
           fullWidth
           sx={{ marginBottom: '10px' }}
         />
-        <FormControl component="fieldset" sx={{ marginTop: '10px' }}>
-          <RadioGroup row aria-label="room-access" name="room-access" value={roomDetails.access} onChange={handleAccessChange}>
-            <FormControlLabel value="unrestricted" control={<Radio />} label="Unrestricted" />
-            <FormControlLabel value="restricted" control={<Radio />} label="Restricted" />
-          </RadioGroup>
-        </FormControl>
-        {roomDetails.access === 'restricted' && (
-          <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-            {roomDetails.allowedEmails.map((email, index) => (
-              <TextField
-                key={index}
-                value={email}
-                onChange={(e) => handleEmailChange(index, e.target.value)}
-                variant="outlined"
-                fullWidth
-                label={`Email ${index + 1}`}
-                sx={{ marginRight: '5px' }}
-              />
-            ))}
-            <IconButton onClick={handleAddEmail} color="primary" aria-label="add email">
-              <Add />
-            </IconButton>
-          </Box>
+        {!roomToUpdate && (
+          <React.Fragment>
+            <FormControl component="fieldset" sx={{ marginTop: '10px' }}>
+              <RadioGroup row aria-label="room-access" name="room-access" value={roomDetails.access} onChange={handleAccessChange}>
+                <FormControlLabel value="unrestricted" control={<Radio />} label="Unrestricted" />
+                <FormControlLabel value="restricted" control={<Radio />} label="Restricted" />
+              </RadioGroup>
+            </FormControl>
+            {roomDetails.access === 'restricted' && (
+              <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+                {roomDetails.allowedEmails.map((email, index) => (
+                  <TextField
+                    key={index}
+                    value={email}
+                    onChange={(e) => handleEmailChange(index, e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                    label={`Email ${index + 1}`}
+                    sx={{ marginRight: '5px' }}
+                  />
+                ))}
+                <IconButton onClick={handleAddEmail} color="primary" aria-label="add email">
+                  <Add />
+                </IconButton>
+              </Box>
+            )}
+          </React.Fragment>
         )}
       </DialogContent>
       <DialogActions>
