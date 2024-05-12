@@ -97,6 +97,9 @@ const Dashboard = () => {
                         <Typography variant="body2" style={{ position: 'absolute', textAlign: 'left', top: '27%', left: '10%', color: 'grey', maxWidth: '85%' }}>
                             {room.roomDescription}
                         </Typography>
+                        <Typography variant="subtitle2" gutterBottom style={{ position: 'absolute', top: '65%', left: '25%', transform: 'translateX(-50%)', color: 'black', fontSize:'12px', fontFamily:'revert' }}>
+                            Created By: {room.roomCreatedBy}
+                        </Typography>
                         {room.access === 'restricted' && (
                             <LockPersonIcon sx={{marginTop:'-10px', marginLeft:'100%'}}/>
                         )}
