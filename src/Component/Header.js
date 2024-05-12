@@ -13,6 +13,9 @@ import Createroom from './Createroom';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import MyAccountDialog from './MyAccountDialog';
 import { useLocation } from 'react-router-dom';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LockIcon from '@mui/icons-material/Lock';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 export default function ButtonAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -115,9 +118,18 @@ export default function ButtonAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
               >
-                <MenuItem onClick={handleOpenMyAccountDialog}>My Account</MenuItem>
+                {/* <MenuItem onClick={handleOpenMyAccountDialog}>My Account</MenuItem>
                 <MenuItem onClick={handleOpenResetPasswordDialog}>Reset Password</MenuItem> 
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem> */}
+                <MenuItem onClick={handleOpenMyAccountDialog}>
+                  <AccountCircleIcon sx={{ marginRight: 1 }} /> My Account
+                </MenuItem>
+                <MenuItem onClick={handleOpenResetPasswordDialog}>
+                  <LockIcon sx={{ marginRight: 1 }} /> Reset Password
+                </MenuItem> 
+                <MenuItem onClick={handleLogout}>
+                  <LogoutIcon sx={{ marginRight: 1 }} /> Logout
+                </MenuItem>
               </Menu>
               <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
                 {userEmail}
