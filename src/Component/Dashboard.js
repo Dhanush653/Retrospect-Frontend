@@ -59,7 +59,7 @@ const Dashboard = () => {
             } catch (error) {
                 console.error('Error checking access:', error);
             }
-            alert('You are not allowed to enter this room.'); 
+            alert("You don't have access to this room"); 
         } else {
             window.open(`/chatroom/${roomId}`, '_blank');
         }
@@ -97,7 +97,7 @@ const Dashboard = () => {
                         <Typography variant="body2" style={{ position: 'absolute', textAlign: 'left', top: '27%', left: '10%', color: 'grey', maxWidth: '85%' }}>
                             {room.roomDescription}
                         </Typography>
-                        <Typography variant="subtitle2" gutterBottom style={{ position: 'absolute', top: '65%', left: '25%', transform: 'translateX(-50%)', color: 'black', fontSize:'12px', fontFamily:'revert' }}>
+                        <Typography variant="subtitle2" gutterBottom style={{ position: 'absolute', top: '65%', left: '27%', transform: 'translateX(-50%)', color: 'black', fontSize:'12px', fontFamily:'revert', fontWeight:'bolder' }}>
                             Created By: {room.roomCreatedBy}
                         </Typography>
                         {room.access === 'restricted' && (
