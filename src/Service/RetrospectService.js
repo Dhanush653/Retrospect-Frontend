@@ -49,6 +49,15 @@ changePassword(change) {
 checkRoomAccessByEmail(data) {
   return axios.post("http://localhost:8080/rooms/check-access", data);
 }
+
+getRoomById(roomId) {
+  return axios.put(`http://localhost:8080/getRoomById/${roomId}`);
+}
+
+deleteMessageById(id){
+  return axios.delete(`http://localhost:8080/message/delete/${id}`)
+}
+
 }
 
 const retro = new RetrospectService();

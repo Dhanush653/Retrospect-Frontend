@@ -1,26 +1,157 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { io } from 'socket.io-client';
 import { useParams } from 'react-router-dom';
-import Card from './Card';
-import './ChatRoom.css';
+import './ChatRoom.css'
+import './LoginHeader'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LoginHeader from './LoginHeader';
+import { styled } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import RetrospectService from '../Service/RetrospectService';
+import Typography from '@mui/material/Typography';
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import Fab from '@mui/material/Fab';
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import OptionsMenu from './OptionsMenu';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+      padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+      padding: theme.spacing(1),
+    },
+  }));
+
+
+const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSendMessage }) => {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [selectedMessageId, setSelectedMessageId] = useState(null);
+
+    const handleOptionsClick = (event, messageId) => {
+        setAnchorEl(event.currentTarget);
+        setSelectedMessageId(messageId);
+    };
+
+    const handleOptionsClose = () => {
+        setAnchorEl(null);
+        setSelectedMessageId(null);
+    };
+
+    const handleDelete = async () => {
+        try {
+            if (selectedMessageId) {
+                await RetrospectService.deleteMessageById(selectedMessageId);
+                console.log('Message deleted successfully');
+                setAnchorEl(null);
+            }
+        } catch (error) {
+            console.error('Error deleting message:', error);
+        }
+    };
+    
+
+    return (
+        <div className="message-section">
+            <div style={{display: "flex", justifyContent: "space-between"}}>
+                <h3 className='title'>{title}</h3>
+                <AddCircleOutlineRoundedIcon style={{marginTop: '8%'}}/>
+            </div>
+            
+            {/* <div className="messages">
+                {messages.map((msg, index) => (
+                    <>
+                    <p key={index} className={`${getClassName(msg.contentType)} message`}>
+                        {msg.username}: {msg.content}
+                        <img src='../Asserts/options.png' alt='options' height='20vh' className="options-image" onClick={() => handleOptionsClick(msg.id)} style={{cursor: 'pointer', marginTop:'0%'}}/>
+                        <OptionsMenu anchorEl={anchorEl} onClose={handleOptionsClose} onDelete={handleDelete}/>
+                    </p>
+                    </>
+                ))}
+            </div> */}
+
+<div className="messages">
+  {messages.map((msg, index) => (
+    <div key={index} className={`message-container ${getClassName(msg.contentType)}`}>
+      <p className="message-text">
+        {msg.username}: {msg.content}
+      </p>
+      <img
+        src="../Asserts/options.png"
+        alt="options"
+        height="20vh"
+        className="options-image"
+        onClick={(event) => handleOptionsClick(event, msg.id)}
+        style={{ cursor: 'pointer', marginTop: '0%' }}
+      />
+      <OptionsMenu anchorEl={anchorEl} onClose={handleOptionsClose} onDelete={handleDelete} />
+    </div>
+  ))}
+</div>
+
+
+            <div className="input-area">
+                <textarea
+                    value={inputValue}
+                    onChange={(e) => onInputChange(e.target.value)}
+                    placeholder={`Type your ${title} message here...`}
+                    rows="3"
+                />
+                <button className="send-button" onClick={onSendMessage}>+</button>
+            </div>
+        </div>
+    );
+});
+
+
+// Helper function to determine the class based on message type
+function getClassName(contentType) {
+  switch (contentType) {
+    case 'Good':
+      return 'good-message';
+    case 'Bad':
+      return 'bad-message';
+    case 'Pos':
+      return 'pos-message';
+    case 'Blunder':
+      return 'blunder-message';
+    default:
+      return '';
+  }
+}
+
 
 function ChatRoom() {
-
     const { roomId } = useParams();
     const username = localStorage.getItem('userName');
-    const [cards, setCards] = useState([]);
+    const [room, setRoom] = useState([]);
+    // const [messageData, setMessageData] = useState([]);
+    const [goodMessages, setGoodMessages] = useState([]);
+    const [badMessages, setBadMessages] = useState([]);
+    const [posMessages, setPosMessages] = useState([]);
+    const [blunderMessages, setBlunderMessages] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = React.useState(null);
     const [messageInputs, setMessageInputs] = useState({
-        wentWell: '',
-        toImprove: '',
-        actionItems: '',
-        positives: ''
+        Good: '',
+        Bad: '',
+        Pos: '',
+        Blunder: ''
     });
 
+    // Using useRef to manage the socket instance
     const socketRef = useRef(null);
 
+
+
     useEffect(() => {
+        // Initialize socket only once
         if (!socketRef.current) {
-            const socketUrl = `http://192.168.0.231:8085?room=${roomId}&username=${username}`;
+            const socketUrl = `http://192.168.0.22:8085?room=${roomId}&username=${username}`;
             socketRef.current = io(socketUrl, { transports: ['websocket'], upgrade: false });
 
             socketRef.current.on('connect', () => {
@@ -29,18 +160,23 @@ function ChatRoom() {
 
             socketRef.current.on('receive_message', (data) => {
                 console.log('Received message from server:', data);
-                const { type, content } = data;
-                const newCards = [
-                    ...cards,
-                    {
-                        id: Math.random().toString(36).substring(7),
-                        type: type,
-                        input: content,
-                        likes: 0,
-                        dislikes: 0
-                    }
-                ];
-                setCards(newCards);
+                switch (data.contentType) {
+                    case 'Good':
+                        setGoodMessages(prev => [...prev, data]);
+                        break;
+                    case 'Bad':
+                        setBadMessages(prev => [...prev, data]);
+                        break;
+                    case 'Pos':
+                        setPosMessages(prev => [...prev, data]);
+                        break;
+                    case 'Blunder':
+                        setBlunderMessages(prev => [...prev, data]);
+                        break;
+                    default:
+                        // setMessageData(prev => [...prev, data]);
+                        break;
+                }
             });
 
             socketRef.current.on('disconnect', () => {
@@ -55,232 +191,158 @@ function ChatRoom() {
                 socketRef.current = null;
             }
         };
-    }, [roomId, username]);
+    }, [roomId, username]); // Dependencies to recreate the socket if these change
 
-    const userInput = (e, idx) => {
-        let newCards = [...cards];
-        newCards[idx].input = e.target.value;
-        setCards(newCards);
-    };
-
-    const validateInput = (e) => {
-        if (e.target.value === "") {
-            window.alert("Input required");
+    const fetchRoom = async () => {
+        try {
+            const response = await RetrospectService.getRoomById(roomId);
+            setRoom(response.data);
+        } catch (error) {
+            console.error('Error fetching rooms:', error);
         }
     };
 
-    const deleteCard = (id) => {
-        setCards(cards.filter(card => card.id !== id));
+    useEffect(() => {
+        fetchRoom();
+    }, [roomId]);
+
+    // Fetch messages on mount
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/message/${roomId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const messages = await response.json();
+
+                // Categorize messages based on their contentType
+                const good = [];
+                const bad = [];
+                const pos = [];
+                const blunder = [];
+                messages.forEach(msg => {
+                    switch (msg.contentType) {
+                        case 'Good':
+                            good.push(msg);
+                            break;
+                        case 'Bad':
+                            bad.push(msg);
+                            break;
+                        case 'Pos':
+                            pos.push(msg);
+                            break;
+                        case 'Blunder':
+                            blunder.push(msg);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+
+                // Update state with fetched messages
+                setGoodMessages(good);
+                setBadMessages(bad);
+                setPosMessages(pos);
+                setBlunderMessages(blunder);
+            } catch (error) {
+                console.error("Failed to fetch messages:", error);
+            }
+        };
+
+        fetchMessages();
+    }, [roomId]); // Dependency on roomId ensures this runs if roomId changes
+
+    const opens = Boolean(anchorEl);
+
+    const handleInputChange = (value, category) => {
+        setMessageInputs(prev => ({ ...prev, [category]: value }));
     };
 
-    const createCard = (type, input) => {
-        const newCards = [
-            ...cards,
-            {
-                id: Math.random().toString(36).substring(7),
-                type: type,
-                input: input,
-                likes: 0,
-                dislikes: 0
-            }
-        ];
-        setCards(newCards);
-    };
-
-    const moveLeft = (id, idx) => {
-        let newCards = [...cards];
-        for (let card of newCards) {
-            if (card.id === id && card.type === "Went Well") {
-                card.type = "Action Items";
-            } else if (card.id === id && card.type === "To Improve") {
-                card.type = "Went Well";
-            } else if (card.id === id && card.type === "Action Items") {
-                card.type = "To Improve";
-            } else if (card.id === id && card.type === "Positives") {
-                card.type = "Action Items";
-            }
+    const handleSendMessage = (category) => {
+        if (socketRef.current && messageInputs[category].trim()) {
+            const messageContent = messageInputs[category];
+            socketRef.current.emit('message', { content: messageContent, contentType: category, room: roomId, username });
+            handleInputChange('', category); // Clear input after sending
         }
-        newCards.push(newCards[idx]);
-        newCards.splice(idx, 1);
-        setCards(newCards);
     };
 
-    const moveRight = (id, idx) => {
-        let newCards = [...cards];
-        for (let card of newCards) {
-            if (card.id === id && card.type === "Went Well") {
-                card.type = "To Improve";
-            } else if (card.id === id && card.type === "To Improve") {
-                card.type = "Action Items";
-            } else if (card.id === id && card.type === "Action Items") {
-                card.type = "Went Well";
-            } else if (card.id === id && card.type === "Positives") {
-                card.type = "Went Well";
-            }
-        }
-        newCards.push(newCards[idx]);
-        newCards.splice(idx, 1);
-        setCards(newCards);
-    };
+    const handleClickOpen = () => {
+        setOpen(true);
+      };
 
-    const handleLikes = (idx) => {
-        let newCards = [...cards];
-        newCards[idx].likes++;
-        setCards(newCards);
-    };
-
-    const handleDislikes = (idx) => {
-        let newCards = [...cards];
-        newCards[idx].dislikes++;
-        setCards(newCards);
-    };
-
-    const sendMessage = (id, type, input) => {
-        // Send message to backend via socket
-        socketRef.current.emit('send_message', {
-            room: roomId,
-            content: input,
-            contentType: type
-        });
-        // Remove the card after sending the message
-        deleteCard(id);
+    const handleClose = () => {
+        setOpen(false);
     };
 
     return (
-        <div className="App">
-            <h2>Retro Board</h2>
-            <div className="text-center">
-                <div className="row">
-                    <div>
-                        <button className="addButton wentWell" onClick={() => createCard("Went Well", "")}>
-                            <h4>What Went Well</h4>
-                            <span>+</span>
-                        </button>
-                        {cards.map((card, idx) => {
-                            if (card.type === "Went Well") {
-                                return (
-                                    <Card
-                                        key={"Went Well" + idx}
-                                        idx={idx}
-                                        cardId={card.id}
-                                        value={card.input}
-                                        userInput={userInput}
-                                        validateInput={validateInput}
-                                        moveLeft={moveLeft}
-                                        deleteCard={deleteCard}
-                                        moveRight={moveRight}
-                                        likesCount={card.likes}
-                                        dislikesCount={card.dislikes}
-                                        handleLikes={handleLikes}
-                                        handleDislikes={handleDislikes}
-                                        color={"wentWell"}
-                                        sendMessage={sendMessage} // Add sendMessage prop
-                                    />
-                                );
-                            } else {
-                                return null;
-                            }
-                        })}
-                    </div>
-                    <div>
-                        <button className="addButton toImprove" onClick={() => createCard("To Improve", "")}>
-                            <h4>What Went Wrong</h4>
-                            <span>+</span>
-                        </button>
-                        {cards.map((card, idx) => {
-                            if (card.type === "To Improve") {
-                                return (
-                                    <Card
-                                        key={"To Improve" + idx}
-                                        idx={idx}
-                                        cardId={card.id}
-                                        value={card.input}
-                                        userInput={userInput}
-                                        validateInput={validateInput}
-                                        moveLeft={moveLeft}
-                                        deleteCard={deleteCard}
-                                        moveRight={moveRight}
-                                        likesCount={card.likes}
-                                        dislikesCount={card.dislikes}
-                                        handleLikes={handleLikes}
-                                        handleDislikes={handleDislikes}
-                                        color={"toImprove"}
-                                        sendMessage={sendMessage} // Add sendMessage prop
-                                    />
-                                );
-                            } else {
-                                return null;
-                            }
-                        })}
-                    </div>
-                    <div>
-                        <button className="addButton actionItems" onClick={() => createCard("Action Items", "")}>
-                            <h4>Blunders</h4>
-                            <span>+</span>
-                        </button>
-                        {cards.map((card, idx) => {
-                            if (card.type === "Action Items") {
-                                return (
-                                    <Card
-                                        key={"Action Items" + idx}
-                                        idx={idx}
-                                        cardId={card.id}
-                                        value={card.input}
-                                        userInput={userInput}
-                                        validateInput={validateInput}
-                                        moveLeft={moveLeft}
-                                        deleteCard={deleteCard}
-                                        moveRight={moveRight}
-                                        likesCount={card.likes}
-                                        dislikesCount={card.dislikes}
-                                        handleLikes={handleLikes}
-                                        handleDislikes={handleDislikes}
-                                        color={"actionItems"}
-                                        sendMessage={sendMessage} // Add sendMessage prop
-                                    />
-                                );
-                            } else {
-                                return null;
-                            }
-                        })}
-                    </div>
-                    <div>
-                        <button className="addButton positives" onClick={() => createCard("Positives", "")}>
-                            <h4>Positives</h4>
-                            <span>+</span>
-                        </button>
-                        {cards.map((card, idx) => {
-                            if (card.type === "Positives") {
-                                return (
-                                    <Card
-                                        key={"Positives" + idx}
-                                        idx={idx}
-                                        cardId={card.id}
-                                        value={card.input}
-                                        userInput={userInput}
-                                        validateInput={validateInput}
-                                        moveLeft={moveLeft}
-                                        deleteCard={deleteCard}
-                                        moveRight={moveRight}
-                                        likesCount={card.likes}
-                                        dislikesCount={card.dislikes}
-                                        handleLikes={handleLikes}
-                                        handleDislikes={handleDislikes}
-                                        color={"positives"}
-                                        sendMessage={sendMessage} // Add sendMessage prop
-                                    />
-                                );
-                            } else {
-                                return null;
-                            }
-                        })}
-                    </div>
-                </div>
+        <>
+        <div>
+        <LoginHeader/>
+        </div>
+
+        <div className='belowheader'>
+            <p className='roomname'>{room.roomName}</p>
+
+            <Fab variant="extended" style={{marginTop: '1%', justifyContent: 'right', fontSize: "medium"}} > <PeopleOutlineIcon sx={{ mr: 1 }} /> Users</Fab>
+
+            <InfoOutlinedIcon style={{margin: '2%', cursor: 'pointer'}} onClick={handleClickOpen}/>
+            <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+            <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+             Room Details
+            </DialogTitle>
+            <IconButton aria-label="close" onClick={handleClose}
+            sx={{position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500]}}>
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Room Id: {room.roomId}
+          </Typography>
+          <Typography gutterBottom>
+            Room Name: {room.roomName}
+          </Typography>
+          <Typography gutterBottom>
+            Room Description: {room.roomDescription}
+          </Typography>
+        </DialogContent>
+        </BootstrapDialog>
+        </div>
+        <div className="container">
+            <div className="chat-area">
+                <MessageSection
+                    title="What Went Good"
+                    messages={goodMessages}
+                    inputValue={messageInputs.Good}
+                    onInputChange={(value) => handleInputChange(value, 'Good')}
+                    onSendMessage={() => handleSendMessage('Good')}
+                />
+                <MessageSection
+                    title="What Went Wrong"
+                    messages={badMessages}
+                    inputValue={messageInputs.Bad}
+                    onInputChange={(value) => handleInputChange(value, 'Bad')}
+                    onSendMessage={() => handleSendMessage('Bad')}
+                />
+                <MessageSection
+                    title="Positives"
+                    messages={posMessages}
+                    inputValue={messageInputs.Pos}
+                    onInputChange={(value) => handleInputChange(value, 'Pos')}
+                    onSendMessage={() => handleSendMessage('Pos')}
+                />
+                <MessageSection
+                    title="Blunders"
+                    messages={blunderMessages}
+                    inputValue={messageInputs.Blunder}
+                    onInputChange={(value) => handleInputChange(value, 'Blunder')}
+                    onSendMessage={() => handleSendMessage('Blunder')}
+                />
             </div>
         </div>
+        </>
     );
 }
 
 export default ChatRoom;
-
 
