@@ -84,14 +84,12 @@ const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSen
   <textarea
     value={inputValue}
     onChange={(e) => onInputChange(e.target.value)}
-    placeholder={`Type your ${title} message here...`}
+    placeholder="Type here.."
     className="textarea"
     rows="3"
   />
   <button className="send-button" onClick={onSendMessage}>+</button>
 </div>
-
-
     </div>
   );
 });
