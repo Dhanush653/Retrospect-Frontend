@@ -232,13 +232,17 @@ function ChatRoom() {
     setMessageInputs(prev => ({ ...prev, [category]: value }));
   };
 
-  const handleSendMessage = (category) => {
+  const handleSendMessage = async (category) => {
     if (socketRef.current && messageInputs[category].trim()) {
       const messageContent = messageInputs[category];
       socketRef.current.emit('message', { content: messageContent, contentType: category, room: roomId, username });
       handleInputChange('', category);
+      // Reload the whole page
+      window.location.reload();
     }
   };
+  
+  
 
   const handleDeleteMessage = (messageId) => {
     setGoodMessages(prev => prev.filter(msg => msg.id !== messageId));
