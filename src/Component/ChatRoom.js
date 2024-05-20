@@ -130,7 +130,7 @@ function ChatRoom() {
 
   useEffect(() => {
     if (!socketRef.current) {
-      const socketUrl = `http://192.168.29.204:8085?room=${roomId}&username=${username}`;
+      const socketUrl = `http://192.168.0.22:8085?room=${roomId}&username=${username}`;
       socketRef.current = io(socketUrl, { transports: ['websocket'], upgrade: false });
 
       socketRef.current.on('connect', () => {
@@ -237,8 +237,6 @@ function ChatRoom() {
       const messageContent = messageInputs[category];
       socketRef.current.emit('message', { content: messageContent, contentType: category, room: roomId, username });
       handleInputChange('', category);
-      // Reload the whole page
-      window.location.reload();
     }
   };
   
