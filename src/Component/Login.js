@@ -49,15 +49,16 @@ const Login = () => {
   
         const userDetailsResponse = await RetrospectService.getUserByToken(response.data);
         const userEmail = userDetailsResponse.data.userEmail;
-        localStorage.setItem('userEmail', userEmail); 
+        const userName = userDetailsResponse.data.userName;
+        localStorage.setItem('userEmail', userEmail);
+        localStorage.setItem('userName', userName); 
   
         setUserEmail(userEmail);
   
         const userId = userDetailsResponse.data.userId;
-        const userRole = userDetailsResponse.data.userRole;
 
         console.log(userDetailsResponse)
-        navigate(`/dashboard/${userId}/${userRole}`);
+        navigate(`/dashboard/${userId}`);
       } else {
         setError("Invalid credentials");
       }

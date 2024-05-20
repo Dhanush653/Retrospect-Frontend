@@ -82,14 +82,6 @@ export default function MyAccountDialog({ open, onClose }) {
               fullWidth
             />
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Typography variant="body1" sx={{ fontWeight: 'bold', width: '150px' }}>User Role:</Typography>
-            <TextField
-              value={userDetails && userDetails.userRole}
-              fullWidth
-              disabled
-            />
-          </Box>
         </Box>
       </DialogContent>
       <DialogActions>

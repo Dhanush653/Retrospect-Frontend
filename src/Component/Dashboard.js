@@ -104,9 +104,7 @@ const Dashboard = () => {
                             <LockPersonIcon sx={{marginTop:'-10px', marginLeft:'100%'}}/>
                         )}
                         <div style={{ position: 'absolute', bottom: '10px', right: '6%', display: 'flex' }}>
-                            {userRole === 'admin' && (
-                                <Button variant="outlined" onClick={() => handleUpdateRoom(room)} style={{ marginRight: '10px', fontWeight: 'bold', color: 'black', width: '30px', fontSize: '10px', borderColor: 'black', background:'white' }}>Update</Button>
-                            )}
+                            <Button variant="outlined" onClick={() => handleUpdateRoom(room)} style={{ marginRight: '10px', fontWeight: 'bold', color: 'black', width: '30px', fontSize: '10px', borderColor: 'black', background:'white' }}>Update</Button>
                             {room.roomStatus === 'active' ? (
                                 <Button variant="contained" onClick={() => openRoom(room.roomId, room.access)} style={{ backgroundColor: '#0092ca', color: 'white', fontSize: '10px' }}>Enter Room</Button>
                             ) : (

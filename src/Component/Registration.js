@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Header from './LoginHeader';
 import Box from '@mui/material/Box';
-import { Typography, RadioGroup, FormControlLabel, Radio, TextField, Button, Link as MuiLink, IconButton, InputAdornment } from '@mui/material';
+import { Typography, TextField, Button, Link as MuiLink, IconButton, InputAdornment } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import RetrospectService from '../Service/RetrospectService';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -12,15 +12,10 @@ const Registration = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'user',
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleRoleChange = (event) => {
-    setformValue({ ...formValue, role: event.target.value });
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault(); 
@@ -33,7 +28,6 @@ const Registration = () => {
       userName: formValue.name,
       userEmail: formValue.email,
       userPassword: formValue.password,
-      userRole: formValue.role,
     };
 
     RetrospectService.register(formData)
@@ -70,7 +64,7 @@ const Registration = () => {
       <Header />
       <Box
         sx={{
-          minHeight: '100vh',
+          minHeight: '80vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -79,8 +73,8 @@ const Registration = () => {
       >
         <Box
           backgroundColor="#f2f2f2"
-          height={600}
-          width={550}
+          height={470}
+          width={500}
           marginTop="2%"
           marginBottom="2%"
           display="flex"
@@ -107,7 +101,7 @@ const Registration = () => {
               variant="outlined"
               size="larger"
               placeholder="Enter your name..."
-              sx={{ marginBottom: '20px', '& input': { padding:'5px 10px' }, backgroundColor: 'white', borderRadius:'5px', width:'110%' }}
+              sx={{ marginBottom: '20px', '& input': { padding:'5px 10px' }, backgroundColor: 'white', borderRadius:'5px', width:'90%' }}
             />
             <Typography variant="subtitle1" color='white'>Email</Typography>
             <TextField
@@ -117,7 +111,7 @@ const Registration = () => {
               variant="outlined"
               size="small"
               placeholder="Enter your email..."
-              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white' , borderRadius:'5px', width:'110%'  }}
+              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white' , borderRadius:'5px', width:'90%'  }}
             />
             <Typography variant="subtitle1" color='white'>Password</Typography>
             <TextField
@@ -128,7 +122,7 @@ const Registration = () => {
               variant="outlined"
               size="small"
               placeholder="Enter your password..."
-              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white', borderRadius:'5px', width:'110%'  }}
+              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white', borderRadius:'5px', width:'90%'  }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -151,7 +145,7 @@ const Registration = () => {
               variant="outlined"
               size="small"
               placeholder="Confirm your password..."
-              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white', borderRadius:'5px' , width:'110%' }}
+              sx={{ marginBottom: '20px', '& input': { padding: '5px 10px' }, backgroundColor: 'white', borderRadius:'5px' , width:'90%' }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -170,20 +164,6 @@ const Registration = () => {
                 Passwords do not match
               </Typography>
             )}
-            <Typography variant="subtitle1" color='white'>Role</Typography>
-            <RadioGroup value={formValue.role} onChange={handleRoleChange} sx={{ marginBottom: '20px' }}>
-              <FormControlLabel
-              value="admin"
-              control={<Radio sx={{ color: 'white' }}/>}
-              label={<Typography style={{ color: 'white' }}>Admin</Typography>}
-              />
-              <FormControlLabel
-              value="user"
-              control={<Radio sx={{ color: 'white' }} />}
-              label={<Typography style={{ color: 'white' }}>User</Typography>}
-              />
-
-            </RadioGroup>
             <Button type="submit" variant="contained" sx={{ borderRadius: '20px', background:'#f95959',marginLeft:'35%' }}>
               Sign Up
             </Button>

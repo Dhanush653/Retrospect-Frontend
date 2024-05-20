@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route exact path='/' element={<Login />} />
           <Route path='/registration' element={<Registration />} />
-          <Route  path='/dashboard/:userId/:userRole' element={<Dashboard />} />
+          <Route  path='/dashboard/:userId/' element={<Dashboard />} />
           <Route path='/createroom' element={<Createroom/>}/>
           <Route path='/forgot' element={<ForgotPassword/>}/>
           <Route path='/chatroom/:roomId' element = {<ChatRoom roomName="General Chat"/>}/>

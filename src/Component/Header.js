@@ -20,18 +20,13 @@ import LogoutIcon from '@mui/icons-material/Logout';
 export default function ButtonAppBar() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail'));
-  const [isAdmin, setIsAdmin] = useState(false);
   const [openMyAccountDialog, setOpenMyAccountDialog] = useState(false);
   const [openCreateRoomDialog, setOpenCreateRoomDialog] = useState(false);
   const [openResetPasswordDialog, setOpenResetPasswordDialog] = useState(false); 
   const location = useLocation();
-  const isAdminPage = location.pathname.includes('/admin');
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData && userData.isAdmin) {
-      setIsAdmin(true);
-    }
+    // Add any necessary side effects here
   }, []);
 
   const handleMenuOpen = (event) => {
@@ -118,9 +113,6 @@ export default function ButtonAppBar() {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
               >
-                {/* <MenuItem onClick={handleOpenMyAccountDialog}>My Account</MenuItem>
-                <MenuItem onClick={handleOpenResetPasswordDialog}>Reset Password</MenuItem> 
-                <MenuItem onClick={handleLogout}>Logout</MenuItem> */}
                 <MenuItem onClick={handleOpenMyAccountDialog}>
                   <AccountCircleIcon sx={{ marginRight: 1 }} /> My Account
                 </MenuItem>
@@ -134,9 +126,7 @@ export default function ButtonAppBar() {
               <Typography variant="subtitle1" sx={{ color: 'white', marginRight: '3%' }}>
                 {userEmail}
               </Typography>
-              {(isAdmin || isAdminPage) && ( 
-                <Button color="inherit" style={{ fontWeight: 'bold', background: 'linear-gradient(110.1deg, rgb(241, 115, 30) 18.9%, rgb(231, 29, 54) 90.7%)', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button>
-              )}
+              <Button color="inherit" style={{ fontWeight: 'bold', background: 'linear-gradient(110.1deg, rgb(241, 115, 30) 18.9%, rgb(231, 29, 54) 90.7%)', marginLeft: '-1%' }} onClick={handleOpenCreateRoomDialog}>+ Create Room</Button>
               <Createroom open={openCreateRoomDialog} onClose={handleCloseCreateRoomDialog} /> 
             </>
           ) : null}
@@ -147,4 +137,3 @@ export default function ButtonAppBar() {
     </Box>
   );
 }
-

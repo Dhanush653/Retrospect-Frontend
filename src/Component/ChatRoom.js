@@ -79,7 +79,7 @@ const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSen
         {messages.map((msg, index) => (
           <div key={index} className={`message-container ${getClassName(msg.contentType)}`}>
             <p className="message-text">
-              {msg.username}: {msg.content}
+              <div style={{marginLeft:'5%'}}>{msg.username}: {msg.content} </div> 
             </p>
             <img
               src="../Asserts/options.png"
@@ -138,6 +138,7 @@ function ChatRoom() {
       socketRef.current.on('connect', () => {
         console.log('Socket connected');
       });
+      
 
       socketRef.current.on('receive_message', (data) => {
         console.log('Received message from server:', data);
