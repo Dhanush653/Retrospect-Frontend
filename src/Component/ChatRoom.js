@@ -26,10 +26,10 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
-
-const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSendMessage, onDeleteMessage  }) => {
+const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSendMessage, onDeleteMessage }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
+  const [isTextAreaVisible, setIsTextAreaVisible] = useState(false);
 
   const handleOptionsClick = (event, messageId) => {
     setAnchorEl(event.currentTarget);
@@ -46,7 +46,7 @@ const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSen
       if (selectedMessageId) {
         await RetrospectService.deleteMessageById(selectedMessageId);
         console.log('Message deleted successfully');
-        onDeleteMessage(selectedMessageId);  // Update frontend state
+        onDeleteMessage(selectedMessageId);
         handleOptionsClose();
       }
     } catch (error) {
@@ -54,12 +54,16 @@ const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSen
     }
   };
 
+  const toggleTextArea = () => {
+    setIsTextAreaVisible(!isTextAreaVisible);
+  };
 
   return (
     <div className="message-section">
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h3 className='title'>{title}</h3>
-        <AddCircleOutlineRoundedIcon style={{ marginTop: '8%' }} />
+        <button className={`title-button ${getClassName(title)}`} onClick={toggleTextArea}>
+          {title}
+        </button>
       </div>
       <div className="messages">
         {messages.map((msg, index) => (
@@ -79,17 +83,18 @@ const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSen
           </div>
         ))}
       </div>
-
-<div className="input-area">
-  <textarea
-    value={inputValue}
-    onChange={(e) => onInputChange(e.target.value)}
-    placeholder="Type here.."
-    className="textarea"
-    rows="3"
-  />
-  <button className="send-button" onClick={onSendMessage}>+</button>
-</div>
+      {isTextAreaVisible && (
+        <div className="input-area">
+          <textarea
+            value={inputValue}
+            onChange={(e) => onInputChange(e.target.value)}
+            placeholder="Type here.."
+            className="textarea"
+            rows="3"
+          />
+          <button className="send-button" onClick={onSendMessage}>+</button>
+        </div>
+      )}
     </div>
   );
 });
@@ -112,13 +117,12 @@ function getClassName(contentType) {
 function ChatRoom() {
   const { roomId } = useParams();
   const username = localStorage.getItem('userName');
-  const [room, setRoom] = useState([]);
+  const [room, setRoom] = useState({});
   const [goodMessages, setGoodMessages] = useState([]);
   const [badMessages, setBadMessages] = useState([]);
   const [posMessages, setPosMessages] = useState([]);
   const [blunderMessages, setBlunderMessages] = useState([]);
   const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [messageInputs, setMessageInputs] = useState({
     Good: '',
     Bad: '',
@@ -239,8 +243,6 @@ function ChatRoom() {
       handleInputChange('', category);
     }
   };
-  
-  
 
   const handleDeleteMessage = (messageId) => {
     setGoodMessages(prev => prev.filter(msg => msg.id !== messageId));
@@ -292,15 +294,14 @@ function ChatRoom() {
       </div>
       <div className="container">
         <div className="chat-area">
-        <MessageSection
-        title="What Went Good"
-        messages={goodMessages}
-        inputValue={messageInputs.Good}
-        onInputChange={(value) => handleInputChange(value, 'Good')}
-        onSendMessage={() => handleSendMessage('Good')}
-        onDeleteMessage={handleDeleteMessage} // Pass onDeleteMessage here
-        />
-
+          <MessageSection
+            title="What Went Good"
+            messages={goodMessages}
+            inputValue={messageInputs.Good}
+            onInputChange={(value) => handleInputChange(value, 'Good')}
+            onSendMessage={() => handleSendMessage('Good')}
+            onDeleteMessage={handleDeleteMessage}
+          />
           <MessageSection
             title="What Went Wrong"
             messages={badMessages}

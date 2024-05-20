@@ -21,13 +21,13 @@
 
 .message-section {
   position: relative;
-  border: 1px solid gray;
+  border: 1px solid rgb(255, 255, 255);
   padding: 10px;
   margin: 10px;
   height: calc(100% - 40px); 
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 }
+
 .belowheader {
   display: flex;
   flex-direction: row;
@@ -41,43 +41,34 @@
   font-size: larger;
 }
 
-.title {
+.title-button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  cursor: pointer;
   text-align: left;
 }
 
-
-.good-message {
+.good-message, .title-button.good-message {
   background-color: #68d391; 
-  padding: 5px;
-  margin-bottom: 5px;
-  border-radius: 2px;
 }
 
-.bad-message {
+.bad-message, .title-button.bad-message {
   background-color: #fc8181; 
-  padding: 5px;
-  margin-bottom: 5px;
-  border-radius: 2px;
 }
 
-.pos-message {
+.pos-message, .title-button.pos-message {
   background-color: #f6e05e; 
-  padding: 5px;
-  margin-bottom: 5px;
-  border-radius: 2px;
 }
 
-.blunder-message {
+.blunder-message, .title-button.blunder-message {
   background-color: #f6ad55; 
-  padding: 5px;
-  margin-bottom: 5px;
-  border-radius: 2px;
 }
 
 button {
   cursor: pointer;
 }
-
 
 .message-container {
   display: flex;
