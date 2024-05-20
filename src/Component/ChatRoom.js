@@ -29,7 +29,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSendMessage, onDeleteMessage }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
-  const [isTextAreaVisible, setIsTextAreaVisible] = useState(false);
+  const [showInput, setShowInput] = useState(false);
 
   const handleOptionsClick = (event, messageId) => {
     setAnchorEl(event.currentTarget);
@@ -46,7 +46,7 @@ const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSen
       if (selectedMessageId) {
         await RetrospectService.deleteMessageById(selectedMessageId);
         console.log('Message deleted successfully');
-        onDeleteMessage(selectedMessageId);
+        onDeleteMessage(selectedMessageId);  // Update frontend state
         handleOptionsClose();
       }
     } catch (error) {
@@ -54,17 +54,27 @@ const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSen
     }
   };
 
-  const toggleTextArea = () => {
-    setIsTextAreaVisible(!isTextAreaVisible);
+  const toggleInputArea = () => {
+    setShowInput(prev => !prev); // Toggle text area visibility
   };
 
   return (
     <div className="message-section">
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <button className={`title-button ${getClassName(title)}`} onClick={toggleTextArea}>
-          {title}
-        </button>
-      </div>
+      <button className={`title-button ${getClassName(title)}`} onClick={toggleInputArea}>
+        {title}
+      </button>
+      {showInput && (
+        <div className="input-area">
+          <textarea
+            value={inputValue}
+            onChange={(e) => onInputChange(e.target.value)}
+            placeholder="Type here.."
+            className="textarea"
+            rows="3"
+          />
+          <button className="send-button" onClick={onSendMessage}>+</button>
+        </div>
+      )}
       <div className="messages">
         {messages.map((msg, index) => (
           <div key={index} className={`message-container ${getClassName(msg.contentType)}`}>
@@ -83,18 +93,6 @@ const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSen
           </div>
         ))}
       </div>
-      {isTextAreaVisible && (
-        <div className="input-area">
-          <textarea
-            value={inputValue}
-            onChange={(e) => onInputChange(e.target.value)}
-            placeholder="Type here.."
-            className="textarea"
-            rows="3"
-          />
-          <button className="send-button" onClick={onSendMessage}>+</button>
-        </div>
-      )}
     </div>
   );
 });
