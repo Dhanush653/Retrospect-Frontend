@@ -58,6 +58,10 @@ deleteMessageById(id){
   return axios.delete(`http://localhost:8080/message/delete/${id}`)
 }
 
+userJoinRoom(data){
+  return axios.post("http://localhost:8080/userJoinRoom", data);
+}
+
 }
 
 const retro = new RetrospectService();
