@@ -15,6 +15,7 @@ import RetrospectService from '../Service/RetrospectService';
 import Typography from '@mui/material/Typography';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import OptionsMenu from './OptionsMenu';
+import UsernamesDialog from './UsernamesDialog'; // Import the dialog component
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -24,6 +25,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
+
 const MessageSection = memo(({ title, messages, inputValue, onInputChange, onSendMessage, onDeleteMessage }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
@@ -125,6 +127,7 @@ function ChatRoom() {
     Pos: '',
     Blunder: ''
   });
+  const [dialogOpen, setDialogOpen] = useState(false); // State for usernames dialog
 
   const socketRef = useRef(null);
 
@@ -255,6 +258,14 @@ function ChatRoom() {
     setOpen(false);
   };
 
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
   return (
     <>
       <div>
@@ -264,7 +275,11 @@ function ChatRoom() {
       <div className='belowheader'>
         <p className='roomname'>{room.roomName}</p>
 
-        <div variant="extended" style={{ marginTop: '2%', marginLeft:'75%',justifyContent: 'right', fontSize: "medium",borderRadius:'7%' }}> <PeopleOutlineIcon sx={{ mr: 1 }} /> </div>
+        <div variant="extended" style={{ marginTop: '2%', marginLeft: '75%', justifyContent: 'right', fontSize: "medium", borderRadius: '7%' }}>
+          <IconButton onClick={handleDialogOpen}>
+            <PeopleOutlineIcon sx={{ mr: 1 }} />
+          </IconButton>
+        </div>
 
         <InfoOutlinedIcon style={{ margin: '2%', cursor: 'pointer' }} onClick={handleClickOpen} />
         <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
@@ -324,6 +339,7 @@ function ChatRoom() {
           />
         </div>
       </div>
+      <UsernamesDialog roomId={roomId} open={dialogOpen} onClose={handleDialogClose} />
     </>
   );
 }

@@ -62,6 +62,9 @@ userJoinRoom(data){
   return axios.post("http://localhost:8080/userJoinRoom", data);
 }
 
+getUsernamesInRoom(roomId) {
+  return axios.get(`http://localhost:8080/usersInRoom/${roomId}`);
+}
 }
 
 const retro = new RetrospectService();

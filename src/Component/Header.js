@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import ChatIcon from '../Asserts/chaticon.png';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -24,10 +24,6 @@ export default function ButtonAppBar() {
   const [openCreateRoomDialog, setOpenCreateRoomDialog] = useState(false);
   const [openResetPasswordDialog, setOpenResetPasswordDialog] = useState(false); 
   const location = useLocation();
-
-  useEffect(() => {
-    // Add any necessary side effects here
-  }, []);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
