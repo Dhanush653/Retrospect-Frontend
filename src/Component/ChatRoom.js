@@ -275,13 +275,13 @@ function ChatRoom() {
       <div className='belowheader'>
         <p className='roomname'>{room.roomName}</p>
 
-        <div variant="extended" style={{ marginTop: '2%', marginLeft: '75%', justifyContent: 'right', fontSize: "medium", borderRadius: '7%' }}>
+        <div variant="extended" style={{ marginTop: '1.5%', marginLeft: '78%', justifyContent: 'right', fontSize: "medium", borderRadius: '7%' }}>
           <IconButton onClick={handleDialogOpen}>
-            <PeopleOutlineIcon sx={{ mr: 1 }} />
+            <PeopleOutlineIcon sx={{ color:'black'}} />
           </IconButton>
         </div>
 
-        <InfoOutlinedIcon style={{ margin: '2%', cursor: 'pointer' }} onClick={handleClickOpen} />
+        <InfoOutlinedIcon style={{ marginRight: '3%',marginTop:'2%', cursor: 'pointer' }} onClick={handleClickOpen} />
         <BootstrapDialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
           <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
             Room Details
